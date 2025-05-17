@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>მელოდია</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>50</y>
+      <width>440</width>
+      <height>59</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>BPG Glaho</family>
+      <pointsize>36</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="text">
+     <string>მელოდია ფარმასი</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+    <property name="indent">
+     <number>0</number>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>210</y>
+      <width>280</width>
+      <height>280</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>BPG Glaho</family>
+      <pointsize>22</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>პროდუქცია</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>210</y>
+      <width>280</width>
+      <height>280</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>BPG Glaho</family>
+      <pointsize>22</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>რაღაც კიდევ</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>210</y>
+      <width>280</width>
+      <height>280</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>BPG Glaho</family>
+      <pointsize>22</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>რაღაც კიდევ</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1000</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menulogout">
+    <property name="title">
+     <string>პროგრამა</string>
+    </property>
+    <addaction name="action_register"/>
+    <addaction name="action_logout"/>
+   </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>პროდუქტი</string>
+    </property>
+    <addaction name="action_product"/>
+    <addaction name="action_4"/>
+    <addaction name="action_2"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>დახმარება</string>
+    </property>
+    <addaction name="action_6"/>
+    <addaction name="action_5"/>
+   </widget>
+   <addaction name="menulogout"/>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+  </widget>
+  <action name="actionLogout">
+   <property name="text">
+    <string>პარამეტრები</string>
+   </property>
+  </action>
+  <action name="action_product">
+   <property name="text">
+    <string>პროდუქტის დამატება</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>პროდუქციის ნახვა</string>
+   </property>
+  </action>
+  <action name="action_logout">
+   <property name="text">
+    <string>გასვლა</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>საქონლის მიღება</string>
+   </property>
+  </action>
+  <action name="action_5">
+   <property name="text">
+    <string>პროგრამის შესახებ</string>
+   </property>
+  </action>
+  <action name="action_6">
+   <property name="text">
+    <string>დახმარება</string>
+   </property>
+  </action>
+  <action name="action_7">
+   <property name="text">
+    <string>მომხმარებლის რეგისტრაცია</string>
+   </property>
+  </action>
+  <action name="action_register">
+   <property name="text">
+    <string>მომხმარებლის რეგისტრაცია</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>მოხმარებლის რედაქტირება</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>მოხმარებლის წაშლა</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
