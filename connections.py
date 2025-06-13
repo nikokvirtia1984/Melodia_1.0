@@ -280,7 +280,7 @@ class MaterTableView(QWidget):
         self.load_data()
         self.tableView.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
         # self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        # self.btn_save.clicked.connect(self.save_changes)
+        self.btn_save.clicked.connect(self.save_changes)
 
     def get_db_connection(self):
         """Establish database connection with error handling"""
@@ -330,6 +330,49 @@ class MaterTableView(QWidget):
         self.tableView.setModel(self.model)
         self.tableView.hideColumn(0) #Hiding Column you want to hide.
 
+
+
+
+    def save_changes(self):
+        try:
+            with self.get_db_connection() as conn:
+                with conn.cursor() as cursor:
+                    for row in range(self.model.rowCount()):
+                        id = self.model.item(row, 0).text()
+                        name = self.model.item(row, 1).text()
+                        code = self.model.item(row, 2).text()
+                        division = self.model.item(row, 3).text()
+                        type = self.model.item(row, 4).text()
+                        cc = self.model.item(row, 5).text()
+                        rec = self.model.item(row, 6).text()
+                        referral = self.model.item(row, 7).text()
+                        generic = self.model.item(row, 8).text()
+                        storecon = self.model.item(row, 9).text()
+                        note = self.model.item(row, 12).text()
+
+                        cursor.execute("""
+                            UPDATE mater SET
+                                name = %s,
+                                code = %s,
+                                division = %s,
+                                type = %s, 
+                                cc = %s,
+                                rec = %s,
+                                referral = %s,
+                                generic = %s,
+                                storecon = %s,
+                                note = %s
+                            WHERE id = %s
+                        """, (name, code, division, type, cc, rec, referral, generic, storecon, note, id))
+                    conn.commit()
+                    QMessageBox.information(self, 'Successes', 'Changes saved successfully')
+
+            self.model.clear()
+            self.load_data()
+            self.tableView.hideColumn(0)
+        except Exception as e:
+            QMessageBox.critical(self, "Error",
+                                 f"Failed to save changes:\n{str(e)}")
 
 
 
