@@ -279,8 +279,11 @@ class MaterTableView(QWidget):
         loadUi('ui/view_mater.ui', self)
         self.load_data()
         self.tableView.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
-        # self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.btn_save.clicked.connect(self.save_changes)
+        self.filter_name.textChanged.connect(self.filter_item_with_name)
+        self.filter_generic.textChanged.connect(self.filter_item_with_generic)
+        self.filter_code.textChanged.connect(self.filter_item_with_code)
 
     def get_db_connection(self):
         """Establish database connection with error handling"""
@@ -375,6 +378,42 @@ class MaterTableView(QWidget):
                                  f"Failed to save changes:\n{str(e)}")
 
 
+    # def filter_item_with_name(self):
+    #     filter_text = self.filter_name.text().lower()
+    #     for row in range(self.model.rowCount()):
+    #         match_found = False
+    #         for column in [1]:
+    #             item = self.model.item(row, column)
+    #             if item and filter_text in item.text().lower():
+    #                 match_found = True
+    #                 break
+    #         self.tableView.setRowHidden(row, not match_found)
+    #
+    #
+    # def filter_item_with_generic(self):
+    #     ...
+    #
+    #
+    # def filter_item_with_code(self):
+    #     ...
 
+    def filter_item_with_name(self):
+        filter_text = self.filter_name.text().lower()
+        self._apply_filter(filter_text, column=1)  # Column 1 is Name
+
+    def filter_item_with_generic(self):
+        filter_text = self.filter_generic.text().lower()
+        self._apply_filter(filter_text, column=8)  # Column 8 is Generic
+
+    def filter_item_with_code(self):
+        filter_text = self.filter_code.text().lower()
+        self._apply_filter(filter_text, column=13)  # Column 2 is Code
+
+    def _apply_filter(self, filter_text, column):
+        """Helper method to apply filtering to a specific column"""
+        for row in range(self.model.rowCount()):
+            item = self.model.item(row, column)
+            match = item is not None and filter_text in item.text().lower()
+            self.tableView.setRowHidden(row, not match)
 
 
