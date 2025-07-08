@@ -45,7 +45,7 @@
      <number>0</number>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="merchant_button">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -61,7 +61,7 @@
      </font>
     </property>
     <property name="text">
-     <string>პროდუქცია</string>
+     <string>საცალო</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_2">
@@ -80,7 +80,7 @@
      </font>
     </property>
     <property name="text">
-     <string>რაღაც კიდევ</string>
+     <string>საბითუმო</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_3">

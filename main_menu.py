@@ -3,7 +3,7 @@ import psycopg2
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QWidget, QComboBox
 from PyQt6.uic import loadUi
 from user_system import UserSystem, ViewUsersWindow
-from connections import MaterTable, MaterTableView
+from connections import MaterTable, MaterTableView, MerchantTable
 
 
 
@@ -32,6 +32,7 @@ class MenuWindow(QMainWindow):
         self.action_product.triggered.connect(self.show_add_products)
         self.view_mater.triggered.connect(self.show_mater)
         self.action_users.triggered.connect(self.show_user_management)
+        self.merchant_button.clicked.connect(self.show_merchant)
 
     def show_user_management(self):
         try:
@@ -53,6 +54,10 @@ class MenuWindow(QMainWindow):
     def show_add_products(self):
         self.add_product_window = MaterTable()
         self.add_product_window.show()
+
+    def show_merchant(self):
+        self.merchant_table_view = MerchantTable()
+        self.merchant_table_view.show()
 
     def logout(self) -> None:
         """Handle logout process by showing login window and closing this window."""

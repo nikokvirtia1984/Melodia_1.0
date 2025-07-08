@@ -1,5 +1,6 @@
 import random
 import psycopg2
+from PyQt6.QtCore import Qt, QEvent, QModelIndex
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6.QtWidgets import (QWidget, QMessageBox, QLineEdit, QComboBox,
                              QTextEdit, QTableWidget, QCheckBox, QTableView, QHeaderView)
@@ -378,25 +379,6 @@ class MaterTableView(QWidget):
                                  f"Failed to save changes:\n{str(e)}")
 
 
-    # def filter_item_with_name(self):
-    #     filter_text = self.filter_name.text().lower()
-    #     for row in range(self.model.rowCount()):
-    #         match_found = False
-    #         for column in [1]:
-    #             item = self.model.item(row, column)
-    #             if item and filter_text in item.text().lower():
-    #                 match_found = True
-    #                 break
-    #         self.tableView.setRowHidden(row, not match_found)
-    #
-    #
-    # def filter_item_with_generic(self):
-    #     ...
-    #
-    #
-    # def filter_item_with_code(self):
-    #     ...
-
     def filter_item_with_name(self):
         filter_text = self.filter_name.text().lower()
         self._apply_filter(filter_text, column=1)  # Column 1 is Name
@@ -417,3 +399,148 @@ class MaterTableView(QWidget):
             self.tableView.setRowHidden(row, not match)
 
 
+
+class MerchantTable(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        loadUi('ui/merchant.ui', self)
+
+        # Initialize Models
+        self.sourceModel = QStandardItemModel()
+        self.destinationModel = QStandardItemModel()
+
+        # Set Models to their respective TableViews
+        self.merchant_table.setModel(self.sourceModel)
+        self.basket.setModel(self.destinationModel)
+
+        # Configure Source TableView (merchant_table)
+        self.merchant_table.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
+        self.merchant_table.setSelectionMode(QTableView.SelectionMode.SingleSelection)
+        self.merchant_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.merchant_table.resizeColumnsToContents() # Often conflicts with Stretch, keep if specific columns are too wide/narrow
+        # self.merchant_table.horizontalHeader().setStretchLastSection(True) # Only if you want last section to take all remaining space
+
+        # Configure Destination TableView (basket)
+        self.basket.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+
+        # Connect signals for pasting
+        self.merchant_table.doubleClicked.connect(self.paste_selected_row)
+        self.merchant_table.installEventFilter(self) # Install event filter on the table view itself
+
+        # Set initial headers for the destination table (basket)
+        # These should match the columns you expect to paste
+        self.destinationModel.setHorizontalHeaderLabels([
+            'პროდუქტის სახელი',
+            'პროდუქტის ღირებულება',
+            'დღ/სპ',
+            'ვარგისია',
+            'ნაშთი',
+            'სერიული ნომერი'
+        ])
+
+        # Load data into the source table after all setup
+        self.load_data()
+
+    def eventFilter(self, obj, event):
+        if obj == self.merchant_table and event.type() == QEvent.Type.KeyPress:
+            # Attempt 3: Using Qt.Key.Key_Return and Qt.Key.Key_Enter
+            # This is the most explicit way to access these constants
+            if event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter:
+                self.paste_selected_row()
+                return True
+        return super().eventFilter(obj, event)
+
+
+    def get_db_connection(self):
+        """Establish database connection with error handling"""
+        try:
+            return psycopg2.connect(
+                host="localhost",
+                dbname="postgres",
+                user="postgres",
+                password="Eleneliza1984",
+                port=5432
+            )
+        except Exception as e:
+            QMessageBox.critical(self, "Database Error",
+                                 f"Connection failed: {str(e)}")
+            raise
+
+    def load_data(self):
+        try:
+            with self.get_db_connection() as conn:
+                with conn.cursor() as cursor:
+                    # UPDATED SQL QUERY: Select only the desired columns
+                    cursor.execute("""
+                    SELECT
+                        m."NAM_MAT",          -- პროდუქტის სახელი
+                        n."PRICE",            -- პროდუქტის ღირებულება
+                        n."COD_MAT",          -- Assuming 'დღ/სპ'. PLEASE CONFIRM THIS IS THE CORRECT COLUMN.
+                        n."DAT_PROD",         -- Assuming 'ვარგისია'. PLEASE CONFIRM THIS IS THE CORRECT COLUMN.
+                        n."NAST",             -- ნაშთი
+                        n."SER_NUM"           -- სერიული ნომერი
+                    FROM
+                        public.mater1 AS m
+                    JOIN
+                        public.nashti AS n ON m."COD_MAT" = n."COD_MAT";
+                    """)
+
+                    # Get column names from the cursor description
+                    column_names = [desc[0] for desc in cursor.description]
+                    self.display_source_data(cursor.fetchall(), column_names) # Renamed for clarity
+        except Exception as e:
+            QMessageBox.critical(self, "Error",
+                                 f"Failed to load data:\n{str(e)}")
+
+    def display_source_data(self, data: List[tuple], column_headers: List[str]):
+        """Populates the source table view (merchant_table) with data."""
+        self.sourceModel.clear() # Clear existing data
+
+        # Define the exact Georgian headers you want to display, in the desired order
+        # These must match the order of columns selected in your SQL query
+        desired_georgian_headers = [
+            'პროდუქტის სახელი',
+            'პროდუქტის ღირებულება',
+            'დღ/სპ',
+            'ვარგისია',
+            'ნაშთი',
+            'სერიული ნომერი'
+        ]
+
+        self.sourceModel.setHorizontalHeaderLabels(desired_georgian_headers)
+        if data:  # Only call begin/end if there's data to insert
+            self.sourceModel.beginInsertRows(QModelIndex(), 0, len(data) - 1)
+            for row_data in data:
+                row_items = [QStandardItem(str(cell_data)) for cell_data in row_data]
+                self.sourceModel.appendRow(row_items)
+            self.sourceModel.endInsertRows()
+
+
+
+    def paste_selected_row(self):
+        """
+        Extracts data from the currently selected row in the source table view
+        and appends it to the destination table view (basket).
+        This method is called by double-click or Enter key.
+        """
+        selected_indexes = self.merchant_table.selectionModel().selectedRows()
+
+        if not selected_indexes:
+            return # No row selected, do nothing
+
+        selected_row_index = selected_indexes[0].row()
+
+        # Get the data from the selected row in the source model
+        # Optimized: Directly get row items from the model
+        row_data = []
+        for col in range(self.sourceModel.columnCount()):
+            item = self.sourceModel.item(selected_row_index, col)
+            if item:
+                row_data.append(item.text())
+            else:
+                row_data.append("")
+
+        if row_data:
+            # Create a list of QStandardItem objects for the new row
+            new_row_items = [QStandardItem(data) for data in row_data]
+            self.destinationModel.appendRow(new_row_items)
