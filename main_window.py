@@ -1,4 +1,5 @@
 # from PyQt6.QtGui.QTextCursor import position
+from PyQt6.QtCore import QFile, QIODevice, QTextStream
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox,QLabel, QWidget
 from PyQt6.uic import loadUi
 import sys
@@ -10,6 +11,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         loadUi('ui/LoginWindow.ui', self)
+        self.load_qss('ui/Adaptic.qss')
         self.user_system = UserSystem()
         self.main_menu = None
         # Connect signals
@@ -19,6 +21,20 @@ class MainWindow(QMainWindow):
         self.pass_restore.linkActivated.connect(self.show_password_form)
         self.password_form = RecoverPass()
 
+
+    def load_qss(self, filepath):
+        """Loads a QSS file and applies it to the application."""
+        qss_file = QFile(filepath)
+        if not qss_file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
+            QMessageBox.critical(self, "QSS Error",
+                                 f"Error: Could not open QSS file: {filepath}\n"
+                                 f"Check file path and permissions.")
+            return
+
+        stylesheet = QTextStream(qss_file).readAll()
+        qss_file.close()
+
+        QApplication.instance().setStyleSheet(stylesheet)
 
     def show_password_form(self):
         self.password_form.show()

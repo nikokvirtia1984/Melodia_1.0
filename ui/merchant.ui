@@ -356,7 +356,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_8"/>
+          <widget class="QLineEdit" name="filter_name"/>
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_11">

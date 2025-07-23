@@ -57,6 +57,7 @@ class MenuWindow(QMainWindow):
 
     def show_merchant(self):
         self.merchant_table_view = MerchantTable()
+        self.merchant_table_view.showMaximized()
         self.merchant_table_view.show()
 
     def logout(self) -> None:
