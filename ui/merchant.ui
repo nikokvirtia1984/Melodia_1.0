@@ -172,7 +172,7 @@
             <widget class="QLineEdit" name="lineEdit_3"/>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_4"/>
+            <widget class="QLineEdit" name="total_amount"/>
            </item>
           </layout>
          </item>

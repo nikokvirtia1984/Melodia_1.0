@@ -1,3 +1,4 @@
+import datetime
 import random
 import psycopg2
 from PyQt6.QtCore import Qt, QEvent, QModelIndex, QTextStream, QFile, QIODevice
@@ -400,441 +401,15 @@ class MaterTableView(QWidget):
             self.tableView.setRowHidden(row, not match)
 
 
-# class MerchantTable(QWidget):
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#         loadUi('ui/merchant.ui', self)
-#
-#         self.sourceModel = QStandardItemModel()
-#         self.destinationModel = QStandardItemModel()
-#
-#         self.merchant_table.setModel(self.sourceModel)
-#         self.basket.setModel(self.destinationModel)
-#
-#         # Configure Source TableView (merchant_table)
-#         self.merchant_table.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
-#         self.merchant_table.setSelectionMode(QTableView.SelectionMode.SingleSelection)
-#         self.merchant_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-#         self.merchant_table.resizeColumnsToContents()  # Often conflicts with Stretch, keep if specific columns are too wide/narrow
-#         # self.merchant_table.horizontalHeader().setStretchLastSection(True) # Only if you want last section to take all remaining space
-#
-#         # Configure Destination TableView (basket)
-#         self.basket.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-#
-#         # Connect signals for pasting
-#         self.merchant_table.doubleClicked.connect(self.paste_selected_row)
-#         self.merchant_table.installEventFilter(self)  # Install event filter on the table view itself
-#
-#         # --- Set the new desired headers for the DESTINATION table (basket) ---
-#         self.destinationModel.setHorizontalHeaderLabels([
-#             'პროდუქტის სახელი',      # Product Name
-#             'რაოდენობა',            # Quantity (how many units the customer wants to buy)
-#             'პროდუქტის ღირებულება', # Price per product unit
-#             'ერთეულის რაოდენობა',   # Product's internal quantity (e.g., pills per bottle)
-#             'სულ'                   # Total price for this line item
-#         ])
-#         # --- End of destination header setup ---
-#
-#         self.load_qss('ui/Adaptic.qss')
-#         self.load_data()
-#
-#
-#     def eventFilter(self, obj, event):
-#         if obj == self.merchant_table and event.type() == QEvent.Type.KeyPress:
-#             if event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter:
-#                 self.paste_selected_row()
-#                 return True
-#         return super().eventFilter(obj, event)
-#
-#     def get_db_connection(self):
-#         """Establish database connection with error handling"""
-#         try:
-#             return psycopg2.connect(
-#                 host="localhost",
-#                 dbname="postgres",
-#                 user="postgres",
-#                 password="Eleneliza1984",
-#                 port=5432
-#             )
-#         except Exception as e:
-#             QMessageBox.critical(self, "Database Error",
-#                                  f"Connection failed: {str(e)}")
-#             raise
-#
-#     def load_qss(self, filepath):
-#         """Loads a QSS file and applies it to the application."""
-#         qss_file = QFile(filepath)
-#         if not qss_file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
-#             QMessageBox.critical(self, "QSS Error",
-#                                  f"Error: Could not open QSS file: {filepath}\n"
-#                                  f"Check file path and permissions.")
-#             return
-#
-#         stylesheet = QTextStream(qss_file).readAll()
-#         qss_file.close()
-#
-#         QApplication.instance().setStyleSheet(stylesheet)
-#
-#
-#     def load_data(self):
-#         try:
-#             with self.get_db_connection() as conn:
-#                 with conn.cursor() as cursor:
-#                     # Your SQL query remains the same, as 'ერთეულის რაოდენობა'
-#                     # is parsed from NAM_MAT, not a separate DB column.
-#                     cursor.execute("""
-#                     SELECT
-#                         m."NAM_MAT",          -- 0: პროდუქტის სახელი (Product Name)
-#                         n."PRICE",            -- 1: პროდუქტის ღირებულება (Price)
-#                         n."COD_MAT",          -- 2: დღ/სპ
-#                         n."DAT_PROD",         -- 3: ვარგისია
-#                         n."NAST",             -- 4: ნაშთი (Stock)
-#                         n."SER_NUM"           -- 5: სერიული ნომერი
-#                     FROM
-#                         public.mater1 AS m
-#                     JOIN
-#                         public.nashti AS n ON m."COD_MAT" = n."COD_MAT";
-#                     """)
-#                     column_names = [desc[0] for desc in cursor.description]
-#                     self.display_source_data(cursor.fetchall(), column_names)
-#         except Exception as e:
-#             QMessageBox.critical(self, "Error",
-#                                  f"Failed to load data:\n{str(e)}")
-#
-#     def display_source_data(self, data: List[tuple], column_headers: List[str]):
-#         self.sourceModel.clear()
-#         # These are the headers for your SOURCE table (merchant_table)
-#         source_georgian_headers = [
-#             'პროდუქტის სახელი',
-#             'პროდუქტის ღირებულება',
-#             'დღ/სპ',
-#             'ვარგისია',
-#             'ნაშთი',
-#             'სერიული ნომერი'
-#         ]
-#         self.sourceModel.setHorizontalHeaderLabels(source_georgian_headers)
-#
-#         if data:
-#             self.sourceModel.beginInsertRows(QModelIndex(), 0, len(data) - 1)
-#             for row_data in data:
-#                 row_items = [QStandardItem(str(cell_data)) for cell_data in row_data]
-#                 self.sourceModel.appendRow(row_items)
-#             self.sourceModel.endInsertRows()
-#
-#     def paste_selected_row(self):
-#         selected_indexes = self.merchant_table.selectionModel().selectedRows()
-#
-#         if not selected_indexes:
-#             return
-#
-#         selected_row_index = selected_indexes[0].row()
-#
-#         # --- Extract data from source row ---
-#         product_name_item = self.sourceModel.item(selected_row_index, 0) # m."NAM_MAT"
-#         price_item = self.sourceModel.item(selected_row_index, 1)        # n."PRICE"
-#
-#         product_name_full = product_name_item.text() if product_name_item else ""
-#         price_str = price_item.text() if price_item else "0.0"
-#
-#         # --- Extract 'ერთეულის რაოდენობა' using regex from product_name_full ---
-#         product_unit_quantity = 0 # Default value if not found
-#         # Regex pattern: find '#' followed by digits, ending with 'ტ', 'ა', or 'დრ'
-#         # Group 1 (the first parenthesis) captures the digits.
-#         pattern = r'#(\d+)(?:ტ|ა|დრ)'
-#         match = re.search(pattern, product_name_full)
-#
-#         if match:
-#             try:
-#                 product_unit_quantity = int(match.group(1)) # Convert captured digits to int
-#             except ValueError:
-#                 product_unit_quantity = 0 # Should not happen if regex only captures digits, but good practice
-#
-#         # Convert price to float for calculations
-#         try:
-#             price = float(price_str)
-#         except ValueError:
-#             price = 0.0
-#
-#         # Default quantity for adding to basket (how many 'product units' the customer wants)
-#         quantity_in_basket = 1
-#
-#
-#         # Calculate total for this item (price per 'product unit' * number of 'product units' desired)
-#         total = price * quantity_in_basket
-#
-#
-#         # --- Create QStandardItem objects for the destination row ---
-#         # Order MUST match the destinationModel.setHorizontalHeaderLabels
-#         new_row_items = [
-#             QStandardItem(product_name_full),              # პროდუქტის სახელი (full name from source)
-#             QStandardItem(f'{quantity_in_basket}'),        # რაოდენობა (default 1, editable later if needed)
-#             QStandardItem(f"{price:.2f}"),                 # პროდუქტის ღირებულება (from source, formatted)
-#             QStandardItem(str(product_unit_quantity)),     # ერთეულის რაოდენობა (parsed from product name)
-#             QStandardItem(str(total))                  # სულ (calculated, formatted)
-#         ]
-#
-#         # Append the new row to the destination model
-#         self.destinationModel.appendRow(new_row_items)
-#         # --- End of paste logic ---
-
-
-
-# import psycopg2
-# import re
-# from PyQt6.QtWidgets import (
-#     QApplication, QWidget, QMessageBox, QTableView, QHeaderView,
-#     QPushButton, QVBoxLayout, QHBoxLayout # Keep these if used in your main UI layout
-# )
-# from PyQt6.QtGui import QStandardItemModel, QStandardItem
-# from PyQt6.uic import loadUi
-# from PyQt6.QtCore import Qt, QEvent, QModelIndex, QFile, QTextStream, QIODevice
-# from typing import List, Tuple
-
-# class MerchantTable(QWidget):
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#         loadUi('ui/merchant.ui', self)
-#
-#         self.sourceModel = QStandardItemModel()
-#         self.destinationModel = QStandardItemModel()
-#
-#         self.merchant_table.setModel(self.sourceModel)
-#         self.basket.setModel(self.destinationModel)
-#
-#         self.merchant_table.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
-#         self.merchant_table.setSelectionMode(QTableView.SelectionMode.SingleSelection)
-#         self.merchant_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-#
-#         self.basket.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-#         # Ensure the basket table cells are editable by double-click
-#         # Default is usually QAbstractItemView.DoubleClicked or EditKeyPressed
-#         # If your cells are not editable, you might explicitly set:
-#         # self.basket.setEditTriggers(QTableView.EditTrigger.DoubleClicked | QTableView.EditTrigger.AnyKeyPressed)
-#
-#
-#         self.merchant_table.doubleClicked.connect(self.paste_selected_row)
-#         self.merchant_table.installEventFilter(self)
-#
-#         # --- Set the desired headers for the DESTINATION table (basket) ---
-#         self.destinationModel.setHorizontalHeaderLabels([
-#             'პროდუქტის სახელი',      # Column 0: Display only
-#             'რაოდენობა',            # Column 1: Editable
-#             'პროდუქტის ღირებულება', # Column 2: Editable (if price can change in basket?)
-#             'ერთეულის რაოდენობა',   # Column 3: Editable
-#             'სულ'                   # Column 4: Calculated, not directly editable by user
-#         ])
-#         # --- End of destination header setup ---
-#
-#         # Connect the dataChanged signal of the destinationModel
-#         # This will now handle updates for both Quantity and Price changes
-#         self.destinationModel.dataChanged.connect(self.handle_basket_data_change)
-#
-#         self.load_qss('ui/Adaptic.qss')
-#         self.load_data()
-#
-#     # --- Renamed and enhanced method to handle data changes in the basket ---
-#     def handle_basket_data_change(self, top_left_index: QModelIndex, bottom_right_index: QModelIndex):
-#         changed_row = top_left_index.row()
-#         changed_col = top_left_index.column()
-#
-#         # Define column indices for clarity
-#         qty_col_idx = 1
-#         price_col_idx = 2
-#         unit_qty_col_idx = 3 # This column does not affect total, so no calculations here
-#         total_col_idx = 4
-#
-#         # Only proceed if the change is in 'რაოდენობა' (Quantity) or 'პროდუქტის ღირებულება' (Price)
-#         if changed_col == qty_col_idx or changed_col == price_col_idx:
-#             try:
-#                 # Get the current quantity from the model
-#                 quantity_item = self.destinationModel.item(changed_row, qty_col_idx)
-#                 quantity_str = quantity_item.text() if quantity_item else "0"
-#                 quantity = int(quantity_str)
-#
-#                 #Get the current unit quantity from the model
-#                 quantity_unit = self.destinationModel.item(changed_row, unit_qty_col_idx)
-#                 unit_str = quantity_unit.text() if quantity_unit else "0"
-#                 unit_quantity = int(unit_str)
-#
-#                 # Get the current price from the model
-#                 price_item = self.destinationModel.item(changed_row, price_col_idx)
-#                 price_str = price_item.text() if price_item else "0.0"
-#                 price = float(price_str)
-#
-#                 # Recalculate the total
-#                 if quantity > 1:
-#                     new_total = quantity * price
-#                 else:
-#                     new_total = unit_quantity / self.paste_selected_row() * price
-#
-#                 # Update the 'სულ' (Total) column in the same row
-#                 # We need to use setData to trigger appropriate updates
-#                 self.destinationModel.setData(
-#                     self.destinationModel.index(changed_row, total_col_idx),
-#                     f"{new_total:.2f}",
-#                     Qt.ItemDataRole.DisplayRole
-#                 )
-#
-#             except ValueError:
-#                 QMessageBox.warning(self, "Input Error",
-#                                     "Please enter valid numeric values for 'რაოდენობა' and 'პროდუქტის ღირებულება'.")
-#                 # Optionally, revert the cell value to a previous state or default
-#                 # e.g., self.destinationModel.setData(top_left_index, "1", Qt.ItemDataRole.DisplayRole)
-#             except Exception as e:
-#                 QMessageBox.critical(self, "Calculation Error", f"An unexpected error occurred: {e}")
-#
-#     # --- End of enhanced method ---
-#
-#     def eventFilter(self, obj, event):
-#         if obj == self.merchant_table and event.type() == QEvent.Type.KeyPress:
-#             if event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter:
-#                 self.paste_selected_row()
-#                 return True
-#         return super().eventFilter(obj, event)
-#
-#     def get_db_connection(self):
-#         """Establish database connection with error handling"""
-#         try:
-#             return psycopg2.connect(
-#                 host="localhost",
-#                 dbname="postgres",
-#                 user="postgres",
-#                 password="Eleneliza1984",
-#                 port=5432
-#             )
-#         except Exception as e:
-#             QMessageBox.critical(self, "Database Error",
-#                                  f"Connection failed: {str(e)}")
-#             raise
-#
-#     def load_qss(self, filepath):
-#         """Loads a QSS file and applies it to the application."""
-#         qss_file = QFile(filepath)
-#         if not qss_file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
-#             QMessageBox.critical(self, "QSS Error",
-#                                  f"Error: Could not open QSS file: {filepath}\n"
-#                                  f"Check file path and permissions.")
-#             return
-#
-#         stylesheet = QTextStream(qss_file).readAll()
-#         qss_file.close()
-#
-#         QApplication.instance().setStyleSheet(stylesheet)
-#
-#
-#     def load_data(self):
-#         try:
-#             with self.get_db_connection() as conn:
-#                 with conn.cursor() as cursor:
-#                     cursor.execute("""
-#                     SELECT
-#                         m."NAM_MAT",          -- 0: პროდუქტის სახელი (Product Name)
-#                         n."PRICE",            -- 1: პროდუქტის ღირებულება (Price)
-#                         n."COD_MAT",          -- 2: დღ/სპ
-#                         n."DAT_PROD",         -- 3: ვარგისია
-#                         n."NAST",             -- 4: ნაშთი (Stock)
-#                         n."SER_NUM"           -- 5: სერიული ნომერი
-#                     FROM
-#                         public.mater1 AS m
-#                     JOIN
-#                         public.nashti AS n ON m."COD_MAT" = n."COD_MAT";
-#                     """)
-#                     column_names = [desc[0] for desc in cursor.description]
-#                     self.display_source_data(cursor.fetchall(), column_names)
-#         except Exception as e:
-#             QMessageBox.critical(self, "Error",
-#                                  f"Failed to load data:\n{str(e)}")
-#
-#     def display_source_data(self, data: List[tuple], column_headers: List[str]):
-#         self.sourceModel.clear()
-#         source_georgian_headers = [
-#             'პროდუქტის სახელი',
-#             'პროდუქტის ღირებულება',
-#             'დღ/სპ',
-#             'ვარგისია',
-#             'ნაშთი',
-#             'სერიული ნომერი'
-#         ]
-#         self.sourceModel.setHorizontalHeaderLabels(source_georgian_headers)
-#
-#         if data:
-#             self.sourceModel.beginInsertRows(QModelIndex(), 0, len(data) - 1)
-#             for row_data in data:
-#                 row_items = [QStandardItem(str(cell_data)) for cell_data in row_data]
-#                 self.sourceModel.appendRow(row_items)
-#             self.sourceModel.endInsertRows()
-#
-#     def paste_selected_row(self):
-#         selected_indexes = self.merchant_table.selectionModel().selectedRows()
-#
-#         if not selected_indexes:
-#             return
-#
-#         selected_row_index = selected_indexes[0].row()
-#
-#         product_name_item = self.sourceModel.item(selected_row_index, 0)
-#         price_item = self.sourceModel.item(selected_row_index, 1)
-#
-#         product_name_full = product_name_item.text() if product_name_item else ""
-#         price_str = price_item.text() if price_item else "0.0"
-#
-#         product_unit_quantity = 0 # Default if not found
-#         pattern = r'#(\d+)(?:ტ|ა|დრ)'
-#         match = re.search(pattern, product_name_full)
-#
-#         if match:
-#             try:
-#                 product_unit_quantity = int(match.group(1))
-#             except ValueError:
-#                 product_unit_quantity = 0
-#
-#         try:
-#             price = float(price_str)
-#         except ValueError:
-#             price = 0.0
-#
-#         quantity_in_basket = 1 # Initial quantity when adding to basket
-#
-#         total = price * quantity_in_basket
-#
-#         new_row_items = [
-#             QStandardItem(product_name_full),                   # Column 0: პროდუქტის სახელი
-#             QStandardItem(str(quantity_in_basket)),             # Column 1: რაოდენობა
-#             QStandardItem(f"{price:.2f}"),                      # Column 2: პროდუქტის ღირებულება
-#             QStandardItem(str(product_unit_quantity)),          # Column 3: ერთეულის რაოდენობა
-#             QStandardItem(f"{total:.2f}")                       # Column 4: სულ
-#         ]
-#
-#         # The QStandardItemModel cells are editable by default.
-#         # However, to prevent unintended edits on some columns:
-#         # For 'პროდუქტის სახელი' (Column 0) and 'სულ' (Column 4), you might want them read-only
-#         new_row_items[0].setFlags(new_row_items[0].flags() & ~Qt.ItemFlag.ItemIsEditable) # Make Product Name Read-only
-#         new_row_items[4].setFlags(new_row_items[4].flags() & ~Qt.ItemFlag.ItemIsEditable) # Make Total Read-only
-#
-#         self.destinationModel.appendRow(new_row_items)
-#         return product_unit_quantity
-
-
-import psycopg2
-import re
-from PyQt6.QtWidgets import (
-    QApplication, QWidget, QMessageBox, QTableView, QHeaderView,
-    QPushButton, QVBoxLayout, QHBoxLayout
-)
-from PyQt6.QtGui import QStandardItemModel, QStandardItem
-from PyQt6.uic import loadUi
-from PyQt6.QtCore import Qt, QEvent, QModelIndex, QFile, QTextStream, QIODevice
-from typing import List, Tuple
-
 
 class MerchantTable(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         loadUi('ui/merchant.ui', self)
-
         self.sourceModel = QStandardItemModel()
         self.destinationModel = QStandardItemModel()
-
+        self.merchant_table.setModel(self.sourceModel)
+        self.filter_name.textChanged.connect(self.filter_item_with_name)
         self.merchant_table.setModel(self.sourceModel)
         self.basket.setModel(self.destinationModel)
 
@@ -869,6 +444,21 @@ class MerchantTable(QWidget):
 
         self.load_qss('ui/Adaptic.qss')
         self.load_data()
+        self.basket.resizeColumnsToContents()
+        
+
+    def _apply_filter(self, filter_text, column):
+        """Helper method to apply filtering to a specific column"""
+        for row in range(self.sourceModel.rowCount()):
+            item = self.sourceModel.item(row, column)
+            match = item is not None and filter_text in item.text().lower()
+            self.merchant_table.setRowHidden(row, not match)
+
+
+    def filter_item_with_name(self):
+        filter_text = self.filter_name.text().lower()
+        self._apply_filter(filter_text, column=0)
+
 
     def handle_basket_data_change(self, top_left_index: QModelIndex, bottom_right_index: QModelIndex):
         changed_row = top_left_index.row()
@@ -892,6 +482,7 @@ class MerchantTable(QWidget):
                 sold_internal_units_item = self.destinationModel.item(changed_row, sold_internal_units_col_idx)
                 sold_internal_units_str = sold_internal_units_item.text() if sold_internal_units_item else "0"
                 sold_internal_units = int(sold_internal_units_str)
+
 
                 # 3. Get the original parsed product_unit_quantity (e.g., 80 from #80ტ)
                 # This value was stored in UserRole + 3 when the row was first added.
@@ -927,6 +518,9 @@ class MerchantTable(QWidget):
 
                     # Total is then price per internal item * number of internal items being sold
                     new_total = price_per_internal_item * sold_internal_units
+                    total_amount = 0.0
+
+
 
                 else:
                     # Standard calculation for all other cases:
@@ -939,15 +533,35 @@ class MerchantTable(QWidget):
                     f"{new_total:.2f}",
                     Qt.ItemDataRole.DisplayRole
                 )
-
+                self.update_grand_total()
             except ValueError:
                 QMessageBox.warning(self, "Input Error",
                                     "Please enter valid numeric values for 'რაოდენობა', 'ერთეულის რაოდენობა', and 'პროდუქტის ღირებულება'.")
+                self.update_grand_total()
             except ZeroDivisionError as zde:
                 QMessageBox.warning(self, "Calculation Error",
                                     f"Calculation failed: {zde}. Check product unit quantity.")
+                self.update_grand_total()
             except Exception as e:
                 QMessageBox.critical(self, "Calculation Error", f"An unexpected error occurred: {e}")
+                self.update_grand_total()
+
+
+    def update_grand_total(self):
+        total = 0.0
+        for row in range(self.destinationModel.rowCount()):
+            total_item = self.destinationModel.item(row, 4)  # Column 4 is 'სულ'
+            if total_item and total_item.text():
+                try:
+                    # Add the total from each row
+                    total += float(total_item.text())
+                except ValueError:
+                    # Silently ignore rows with invalid total values
+                    pass
+
+        # Update the text of the QLineEdit with the new grand total,
+        # formatted to two decimal places.
+        self.total_amount.setText(f"{total:.2f}")
 
     def eventFilter(self, obj, event):
         if obj == self.merchant_table and event.type() == QEvent.Type.KeyPress:
@@ -1008,6 +622,25 @@ class MerchantTable(QWidget):
             QMessageBox.critical(self, "Error",
                                  f"Failed to load data:\n{str(e)}")
 
+    # def display_source_data(self, data: List[tuple], column_headers: List[str]):
+    #     self.sourceModel.clear()
+    #     source_georgian_headers = [
+    #         'პროდუქტის სახელი',
+    #         'პროდუქტის ღირებულება',
+    #         'დღ/სპ',
+    #         'ვარგისია',
+    #         'ნაშთი',
+    #         'სერიული ნომერი'
+    #     ]
+    #     self.sourceModel.setHorizontalHeaderLabels(source_georgian_headers)
+    #
+    #     if data:
+    #         self.sourceModel.beginInsertRows(QModelIndex(), 0, len(data) - 1)
+    #         for row_data in data:
+    #             row_items = [QStandardItem(str(cell_data)) for cell_data in row_data]
+    #             self.sourceModel.appendRow(row_items)
+    #         self.sourceModel.endInsertRows()
+
     def display_source_data(self, data: List[tuple], column_headers: List[str]):
         self.sourceModel.clear()
         source_georgian_headers = [
@@ -1023,7 +656,19 @@ class MerchantTable(QWidget):
         if data:
             self.sourceModel.beginInsertRows(QModelIndex(), 0, len(data) - 1)
             for row_data in data:
+                # 1. Create the list of QStandardItems using a list comprehension
                 row_items = [QStandardItem(str(cell_data)) for cell_data in row_data]
+
+                # 2. Loop through the new list to set tooltips
+                for i, item in enumerate(row_items):
+                    # We use the original data in `row_data` for a more descriptive tooltip
+                    cell_data = row_data[i]
+
+                    if i == 0:  # Column for Product Name
+                        item.setToolTip(f"პროდუქტის დასახელება: {cell_data}")
+                    elif i == 5:  # Column for Serial Number
+                        item.setToolTip(f"სერიული ნომერი: {cell_data}")
+
                 self.sourceModel.appendRow(row_items)
             self.sourceModel.endInsertRows()
 
@@ -1037,6 +682,28 @@ class MerchantTable(QWidget):
 
         product_name_item = self.sourceModel.item(selected_row_index_from_source, 0)
         price_item = self.sourceModel.item(selected_row_index_from_source, 1)
+        product_dat = self.sourceModel.item(selected_row_index_from_source, 3).text()
+
+        product_nast = self.sourceModel.item(selected_row_index_from_source, 4).text()
+        date_now = datetime.date.today()
+        # serial_number_item = self.sourceModel.item(selected_row_index_from_source, 5)
+        # serial_number_text = serial_number_item.text() if serial_number_item else "N/A"
+        # try:
+        #     if float(product_nast) == 0.0:
+        #         QMessageBox.information(self,'Out of stock','პროდუქტი არ არის მარაგში.')
+        #         return
+        #     if product_dat.strip().lower() in ['', 'none', 'null']:
+        #         # If the date is missing, we consider it expired or invalid
+        #         QMessageBox.information(self, 'Product expired', 'პროდუქტი ვადაგასულია (ვადა არ არის მითითებული).')
+        #         return
+        #     expiration_date_from_db = datetime.datetime.strptime(product_dat, '%Y-%m-%d').date()
+        #     if expiration_date_from_db < date_now or expiration_date_from_db == 'None':
+        #         QMessageBox.information(self, 'Product expired', 'პროდუქტი ვადაგასულია.')
+        #         return
+        # except ValueError as e:
+        #     QMessageBox.warning(self, 'Error', f'Failed to process product data. Details: {e}')
+
+
 
         product_name_full = product_name_item.text() if product_name_item else ""
         price_str = price_item.text() if price_item else "0.0"
@@ -1070,7 +737,8 @@ class MerchantTable(QWidget):
             # This is the *initial* editable value for 'ერთეულის რაოდენობა'
             QStandardItem(f"{initial_total:.2f}")
         ]
-
+        new_row_items[0].setToolTip(f"პროდუქტის დასახელება: {product_name_full}")
+        # new_row_items[1].setToolTip(f"სერიული ნომერი: {serial_number_text}")
         # --- IMPORTANT NEW STEP ---
         # Store the original parsed product_unit_quantity in a hidden role (UserRole + 3)
         # for the 'ერთეულის რაოდენობა' column (index 3).
@@ -1083,15 +751,15 @@ class MerchantTable(QWidget):
         new_row_items[4].setFlags(new_row_items[4].flags() & ~Qt.ItemFlag.ItemIsEditable)  # Total
 
         self.destinationModel.appendRow(new_row_items)
+        self.update_grand_total()
 
         # Optional: Print for verification (uses last_added_row_index as discussed)
-        last_added_row_index = self.destinationModel.rowCount() - 1
-        if last_added_row_index >= 0:
-            qty_item_new = self.destinationModel.item(last_added_row_index, 1)
-            unit_qty_item_new = self.destinationModel.item(last_added_row_index, 3)
-            if qty_item_new and unit_qty_item_new:
-                print(
-                    f"Added - Qty: {qty_item_new.text()}, Unit Qty (Editable): {unit_qty_item_new.text()}, Original Parsed Unit Qty: {unit_qty_item_new.data(Qt.ItemDataRole.UserRole + 3)}")
+        # last_added_row_index = self.destinationModel.rowCount() - 1
+        # if last_added_row_index >= 0:
+        #     qty_item_new = self.destinationModel.item(last_added_row_index, 1)
+        #     unit_qty_item_new = self.destinationModel.item(last_added_row_index, 3)
+        #     if qty_item_new and unit_qty_item_new:
+        #         print(f"Added - Qty: {qty_item_new.text()}, Unit Qty (Editable): {unit_qty_item_new.text()}, Original Parsed Unit Qty: {unit_qty_item_new.data(Qt.ItemDataRole.UserRole + 3)}")
         # --- End of paste_selected_row changes ---
 
 
