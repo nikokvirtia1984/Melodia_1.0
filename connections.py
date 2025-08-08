@@ -10,10 +10,6 @@ from typing import List, Union, Dict, Any
 from user_system import UserSystem
 import re
 
-from database import Database
-
-db = Database()
-
 
 class MaterTable(QWidget):
     """Product management interface with database integration"""
@@ -72,7 +68,7 @@ class MaterTable(QWidget):
     def _initialize_db(self) -> None:
         """Initialize database schema with proper error handling"""
         try:
-            with db.connect() as conn:
+            with self.user_db._get_connection() as conn:
                 conn.autocommit = True
                 with conn.cursor() as cursor:
                     cursor.execute('''
@@ -146,7 +142,7 @@ class MaterTable(QWidget):
         try:
             product_data = self.get_form_data()
 
-            with db.connect() as conn:
+            with self.user_db._get_connection() as conn:
                 with conn.cursor() as cursor:
                     try:
                         cursor.execute('''
@@ -221,7 +217,7 @@ class MaterTable(QWidget):
     def _update_existing_product(self, product_data: Dict[str, Any]) -> None:
         """Update existing product record"""
         try:
-            with db.connect() as conn:
+            with self.user_db._get_connection() as conn:
                 with conn.cursor() as cursor:
                     cursor.execute('''
                         UPDATE mater SET
@@ -291,25 +287,25 @@ class MaterTableView(QWidget):
         self.filter_name.textChanged.connect(self.filter_item_with_name)
         self.filter_generic.textChanged.connect(self.filter_item_with_generic)
         self.filter_code.textChanged.connect(self.filter_item_with_code)
-    #
-    # def get_db_connection(self):
-    #     """Establish database connection with error handling"""
-    #     try:
-    #         return psycopg2.connect(
-    #             host="localhost",
-    #             dbname="melodia",
-    #             user="melodia",
-    #             password="melo",
-    #             port=5432
-    #         )
-    #     except Exception as e:
-    #         QMessageBox.critical(self, "Database Error",
-    #                              f"Connection failed: {str(e)}")
-    #         raise
+
+    def get_db_connection(self):
+        """Establish database connection with error handling"""
+        try:
+            return psycopg2.connect(
+                host="localhost",
+                dbname="postgres",
+                user="postgres",
+                password="Eleneliza1984",
+                port=5432
+            )
+        except Exception as e:
+            QMessageBox.critical(self, "Database Error",
+                                 f"Connection failed: {str(e)}")
+            raise
 
     def load_data(self):
         try:
-            with db.connect() as conn:
+            with self.get_db_connection() as conn:
                 with conn.cursor() as cursor:
                     cursor.execute("""
                         SELECT id, name, code, division, type,
@@ -345,7 +341,7 @@ class MaterTableView(QWidget):
 
     def save_changes(self):
         try:
-            with db.connect() as conn:
+            with self.get_db_connection() as conn:
                 with conn.cursor() as cursor:
                     for row in range(self.model.rowCount()):
                         id = self.model.item(row, 0).text()
@@ -574,20 +570,20 @@ class MerchantTable(QWidget):
                 return True
         return super().eventFilter(obj, event)
 
-    # def get_db_connection(self):
-    #     """Establish database connection with error handling"""
-    #     try:
-    #         return psycopg2.connect(
-    #             host="localhost",
-    #             dbname="melodia",
-    #             user="melodia",
-    #             password="melo",
-    #             port=5432
-    #         )
-    #     except Exception as e:
-    #         QMessageBox.critical(self, "Database Error",
-    #                              f"Connection failed: {str(e)}")
-    #         raise
+    def get_db_connection(self):
+        """Establish database connection with error handling"""
+        try:
+            return psycopg2.connect(
+                host="localhost",
+                dbname="postgres",
+                user="postgres",
+                password="Eleneliza1984",
+                port=5432
+            )
+        except Exception as e:
+            QMessageBox.critical(self, "Database Error",
+                                 f"Connection failed: {str(e)}")
+            raise
 
     def load_qss(self, filepath):
         """Loads a QSS file and applies it to the application."""
@@ -605,7 +601,7 @@ class MerchantTable(QWidget):
 
     def load_data(self):
         try:
-            with db.connect() as conn:
+            with self.get_db_connection() as conn:
                 with conn.cursor() as cursor:
                     cursor.execute("""
                     SELECT

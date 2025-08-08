@@ -14,33 +14,29 @@ import logging
 import os
 from getpass import getpass  # For secure password input
 
-from database import Database
-
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6.QtWidgets import QWidget, QMessageBox, QTableView, QHeaderView, QPushButton
 from PyQt6.uic import loadUi
-
-db = Database()
 
 
 class UserSystem:
     def __init__(self):
         self._initialize_db()
-    #
-    # def _get_connection(self):
-    #     """Establish and return a database connection"""
-    #     return psycopg2.connect(
-    #         host="localhost",
-    #         dbname="melodia",
-    #         user="melodia",
-    #         password="melo",
-    #         port=5432
-    #     )
+
+    def _get_connection(self):
+        """Establish and return a database connection"""
+        return psycopg2.connect(
+            host="localhost",
+            dbname="postgres",
+            user="postgres",
+            password="Eleneliza1984",
+            port=5432
+        )
 
     def _initialize_db(self):
         """Initialize the database table"""
         try:
-            with db.connect() as conn:
+            with self._get_connection() as conn:
                 conn.autocommit = True
                 with conn.cursor() as cursor:
                     cursor.execute('''
@@ -81,7 +77,7 @@ class UserSystem:
                    or (False, None) if login fails
         """
         try:
-            with db.connect() as conn:
+            with self._get_connection() as conn:
                 with conn.cursor() as cursor:
                     cursor.execute(
                         """
@@ -157,7 +153,13 @@ class RecoverPass(QWidget):
 
         try:
             # Check email in PostgreSQL
-            conn = db.connect()
+            conn = psycopg2.connect(
+                host="localhost",
+                dbname="postgres",
+                user="postgres",
+                password="Eleneliza1984",
+                port=5432
+            )
             cursor = conn.cursor()
             cursor.execute("SELECT EXISTS(SELECT 1 FROM users WHERE email = %s)", (email,))
             email_exists = cursor.fetchone()[0]
@@ -259,7 +261,13 @@ class RecoverPass(QWidget):
 
         try:
             hash_pass = self._hash_password(new_pass)
-            conn = db.connect()
+            conn = psycopg2.connect(
+                host="localhost",
+                dbname="postgres",
+                user="postgres",
+                password="Eleneliza1984",
+                port=5432
+            )
             with conn:
                 with conn.cursor() as cursor:
                     cursor.execute("UPDATE users SET password = %s WHERE email = %s", (hash_pass.decode(), self.current_email))
@@ -287,20 +295,26 @@ class ViewUsersWindow(QWidget):
         self.btn_refresh.clicked.connect(self.save_changes)
         self.btn_delete.clicked.connect(self.delete_selected)
 
-    # def get_db_connection(self):
-    #     """Establish database connection with error handling"""
-    #     try:
-    #         return db.connect()
-    #     except Exception as e:
-    #         QMessageBox.critical(self, "Database Error",
-    #                              f"Connection failed: {str(e)}")
-    #         raise
+    def get_db_connection(self):
+        """Establish database connection with error handling"""
+        try:
+            return psycopg2.connect(
+                host="localhost",
+                dbname="postgres",
+                user="postgres",
+                password="Eleneliza1984",
+                port=5432
+            )
+        except Exception as e:
+            QMessageBox.critical(self, "Database Error",
+                                 f"Connection failed: {str(e)}")
+            raise
 
     def load_data(self):
 
         """Load and display user data with proper formatting"""
         try:
-            with db.connect() as conn:
+            with self.get_db_connection() as conn:
                 with conn.cursor() as cursor:
                     cursor.execute("""
                         SELECT ID, username, email,
@@ -339,7 +353,7 @@ class ViewUsersWindow(QWidget):
 
         """Save all edited data to the database"""
         try:
-            with db.connect() as conn:
+            with self.get_db_connection() as conn:
                 with conn.cursor() as cursor:
                     for row in range(self.model.rowCount()):
                         user_id = int(self.model.item(row, 0).text())
@@ -392,7 +406,7 @@ class ViewUsersWindow(QWidget):
             )
 
             if reply == QMessageBox.StandardButton.Yes:
-                with db.connect() as conn:
+                with self.get_db_connection() as conn:
                     with conn.cursor() as cursor:
                         cursor.execute(
                             "DELETE FROM users WHERE id = ANY(%s)",
