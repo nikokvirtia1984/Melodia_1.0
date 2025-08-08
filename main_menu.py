@@ -4,6 +4,9 @@ from PyQt6.QtWidgets import QMainWindow, QMessageBox, QWidget, QComboBox
 from PyQt6.uic import loadUi
 from user_system import UserSystem, ViewUsersWindow
 from connections import MaterTable, MaterTableView, MerchantTable
+from database import Database
+
+db = Database()
 
 
 
@@ -92,7 +95,7 @@ class UserRegistration(QWidget):
         phone = self.phone.text()
         position = self.position.currentText()
 
-        self.user_db._get_connection()
+        db.connect()
 
 
         if not all([username, password, email, phone, position]):
@@ -102,7 +105,7 @@ class UserRegistration(QWidget):
         try:
             hashed_pw = self._hash_password(password)
 
-            with self.user_db._get_connection() as conn:
+            with db.connect() as conn:
                 with conn.cursor() as cursor:
                     cursor.execute(
                         """
