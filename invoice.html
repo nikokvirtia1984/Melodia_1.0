@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Invoice</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian&display=swap" rel="stylesheet">
+    <style>
+        /* Add CSS to apply the Georgian font to the entire document */
+        body {
+            font-family: 'Noto Sans Georgian', sans-serif;
+        }
+
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+            font-size: 16px;
+            line-height: 24px;
+            color: #555;
+        }
+
+        .invoice-box table {
+            width: 100%;
+            line-height: inherit;
+            text-align: left;
+        }
+
+        .invoice-box table td {
+            padding: 5px;
+            vertical-align: top;
+        }
+
+        .invoice-box table tr td:nth-child(2) {
+            text-align: right;
+        }
+
+        .invoice-box table tr.top table td {
+            padding-bottom: 20px;
+        }
+
+        .invoice-box table tr.top table td.title {
+            font-size: 45px;
+            line-height: 45px;
+            color: #333;
+        }
+
+        .invoice-box table tr.information table td {
+            padding-bottom: 40px;
+        }
+
+        .invoice-box table tr.heading td {
+            background: #eee;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+
+        .invoice-box table tr.details td {
+            padding-bottom: 20px;
+        }
+
+        .invoice-box table tr.item td {
+            border-bottom: 1px solid #eee;
+        }
+
+        .invoice-box table tr.item.last td {
+            border-bottom: none;
+        }
+
+        .invoice-box table tr.total td:nth-child(2) {
+            border-top: 2px solid #eee;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<p>&nbsp;</p>
+<p></p>
+<div class="invoice-box">
+<table style="height: 343px; width: 813px;" cellspacing="0" cellpadding="0">
+<tbody>
+<tr class="top" style="height: 105px;">
+<td style="height: 105px; width: 799px;" colspan="5">
+<table>
+<tbody>
+<tr>
+<td class="title"><img style="width: 100%; max-width: 300px;" src="https://sparksuite.github.io/simple-html-invoice-template/images/logo.png" /></td>
+<td>Invoice #: {{ invoice_number }}<br />Created: {{ created_date }}<br /><br /></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="information" style="height: 125px;">
+<td style="height: 125px; width: 799px;" colspan="5">
+<table>
+<tbody>
+<tr>
+<td>კომ. საზ. კალანდაძე<br />12345 Sunny Road<br />Sunnyville, CA 12345</td>
+<td>მელოდია<br />john@example.com</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="heading" style="height: 24px;">
+<td style="height: 24px; width: 338.859px;">დასახელება</td>
+<td style="width: 83.2344px; height: 24px;">რაოდენობა</td>
+<td style="width: 172.453px; height: 24px; text-align: center;">ერთეულის რაოდენობა</td>
+<td style="width: 76.2031px; height: 24px;">ფასი</td>
+<td style="height: 24px; width: 80.25px;">&nbsp; &nbsp; &nbsp;სულ</td>
+</tr>
+
+{% for item in items %}
+<tr class="item" style="height: 16px;">
+<td style="height: 16px; width: 338.859px;">{{ item['პროდუქტის სახელი'] }}</td>
+<td style="width: 83.2344px; height: 16px;">{{ item['რაოდენობა'] }}</td>
+<td style="width: 172.453px; height: 16px;">{{ item['ერთეულის რაოდენობა'] }}</td>
+<td style="width: 76.2031px; height: 16px;">{{ item['ფასი'] }}</td>
+<td style="height: 16px; width: 80.25px;">{{ "%.2f"|format(item['რაოდენობა']|int * item['ფასი']|float) }}</td>
+</tr>
+{% endfor %}
+
+<tr class="total" style="height: 25px;">
+<td style="height: 25px; width: 338.859px;"><strong>გაყიდული მედიკამენტები უკან არ მიიღება</strong></td>
+<td style="width: 83.2344px; height: 25px;"><strong>&nbsp;</strong></td>
+<td style="width: 172.453px; height: 25px;"><strong>&nbsp;</strong></td>
+<td style="width: 76.2031px; height: 25px;"><strong>&nbsp;</strong></td>
+<td style="height: 25px; width: 80.25px;"><strong>გადასახდელი: {{ total_price }}</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</body>
+</html>

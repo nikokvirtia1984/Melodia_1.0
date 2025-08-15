@@ -1,4 +1,6 @@
 import datetime
+import jinja2
+import pdfkit
 import random
 import psycopg2
 from PyQt6.QtCore import Qt, QEvent, QModelIndex, QTextStream, QFile, QIODevice
@@ -417,7 +419,7 @@ class MerchantTable(QWidget):
         self.merchant_table.setSelectionMode(QTableView.SelectionMode.SingleSelection)
         self.merchant_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.merchant_table.resizeColumnsToContents()  # Often conflicts with Stretch, keep if specific columns are too wide/narrow
-        #         # self.merchant_table.horizontalHeader().setStretchLastSection(True) # Only if you want last section to take all remaining space
+        # self.merchant_table.horizontalHeader().setStretchLastSection(True) # Only if you want last section to take all remaining space
 
         self.basket.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         # Ensure the basket table cells are editable by double-click
@@ -430,9 +432,9 @@ class MerchantTable(QWidget):
 
         # --- Set the desired headers for the DESTINATION table (basket) ---
         self.destinationModel.setHorizontalHeaderLabels([
-            'პროდუქტის სახელი',  # Column 0: Display only
+            'სახელი',  # Column 0: Display only
             'რაოდენობა',  # Column 1: Editable (customer_qty)
-            'პროდუქტის ღირებულება',  # Column 2: Editable (product_unit_price)
+            'ღირებულება',  # Column 2: Editable (product_unit_price)
             'ერთეულის რაოდენობა',  # Column 3: Editable (sold_internal_units)
             'სულ'  # Column 4: Calculated, not directly editable by user
         ])
@@ -441,10 +443,13 @@ class MerchantTable(QWidget):
         # Connect the dataChanged signal of the destinationModel
         # This will now handle updates for changes in Quantity, Price, OR Unit Quantity
         self.destinationModel.dataChanged.connect(self.handle_basket_data_change)
-
+        self.basket.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
         self.load_qss('ui/Adaptic.qss')
         self.load_data()
         self.basket.resizeColumnsToContents()
+        self.checkout_button.clicked.connect(self.checkout)
+        self.delete_button.clicked.connect(self.delete_product)
+        self.basket.installEventFilter(self)
         
 
     def _apply_filter(self, filter_text, column):
@@ -564,10 +569,19 @@ class MerchantTable(QWidget):
         self.total_amount.setText(f"{total:.2f}")
 
     def eventFilter(self, obj, event):
-        if obj == self.merchant_table and event.type() == QEvent.Type.KeyPress:
-            if event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter:
-                self.paste_selected_row()
-                return True
+        if event.type() == QEvent.Type.KeyPress:
+            # Check if the event came from the merchant table
+            if obj == self.merchant_table:
+                if event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter:
+                    self.paste_selected_row()
+                    return True  # Event handled
+
+            # Check if the event came from the basket table
+            elif obj == self.basket:
+                if event.key() == Qt.Key.Key_Delete:
+                    self.delete_product()
+                    return True  # Event handled
+
         return super().eventFilter(obj, event)
 
     def get_db_connection(self):
@@ -608,7 +622,7 @@ class MerchantTable(QWidget):
                         m."NAM_MAT",          -- 0: პროდუქტის სახელი (Product Name)
                         n."PRICE",            -- 1: პროდუქტის ღირებულება (Price)
                         n."COD_MAT",          -- 2: დღ/სპ
-                        n."DAT_PROD",         -- 3: ვარგისია
+                        n."DAT_GOOD",         -- 3: ვარგისია
                         n."NAST",             -- 4: ნაშთი (Stock)
                         n."SER_NUM"           -- 5: სერიული ნომერი
                     FROM
@@ -622,30 +636,11 @@ class MerchantTable(QWidget):
             QMessageBox.critical(self, "Error",
                                  f"Failed to load data:\n{str(e)}")
 
-    # def display_source_data(self, data: List[tuple], column_headers: List[str]):
-    #     self.sourceModel.clear()
-    #     source_georgian_headers = [
-    #         'პროდუქტის სახელი',
-    #         'პროდუქტის ღირებულება',
-    #         'დღ/სპ',
-    #         'ვარგისია',
-    #         'ნაშთი',
-    #         'სერიული ნომერი'
-    #     ]
-    #     self.sourceModel.setHorizontalHeaderLabels(source_georgian_headers)
-    #
-    #     if data:
-    #         self.sourceModel.beginInsertRows(QModelIndex(), 0, len(data) - 1)
-    #         for row_data in data:
-    #             row_items = [QStandardItem(str(cell_data)) for cell_data in row_data]
-    #             self.sourceModel.appendRow(row_items)
-    #         self.sourceModel.endInsertRows()
-
     def display_source_data(self, data: List[tuple], column_headers: List[str]):
         self.sourceModel.clear()
         source_georgian_headers = [
-            'პროდუქტის სახელი',
-            'პროდუქტის ღირებულება',
+            'სახელი',
+            'ღირებულება',
             'დღ/სპ',
             'ვარგისია',
             'ნაშთი',
@@ -749,10 +744,16 @@ class MerchantTable(QWidget):
         # Set read-only flags for specific columns
         new_row_items[0].setFlags(new_row_items[0].flags() & ~Qt.ItemFlag.ItemIsEditable)  # Product Name
         new_row_items[4].setFlags(new_row_items[4].flags() & ~Qt.ItemFlag.ItemIsEditable)  # Total
-
+        sold_items = {
+            new_row_items[0].text(): {
+                'რაოდენობა': new_row_items[1].text(),
+                'ფასი': new_row_items[2].text(),
+                'ერთეულის რაოდენობა': new_row_items[3].text()
+            }
+        }
         self.destinationModel.appendRow(new_row_items)
         self.update_grand_total()
-
+        return sold_items
         # Optional: Print for verification (uses last_added_row_index as discussed)
         # last_added_row_index = self.destinationModel.rowCount() - 1
         # if last_added_row_index >= 0:
@@ -763,5 +764,70 @@ class MerchantTable(QWidget):
         # --- End of paste_selected_row changes ---
 
 
+    def checkout(self):
+        sold_items = {}
+
+        # We will get the total price from the grand total displayed on the UI
+        total_price = float(self.total_amount.text())  # Assuming total_amount is a QLineEdit
+
+        # 1. Loop through all rows to build a clean list of item data
+        context_list = []
+        for row in range(self.destinationModel.rowCount()):
+            product_name = self.destinationModel.item(row, 0).text()
+            quantity = self.destinationModel.item(row, 1).text()
+            price = self.destinationModel.item(row, 2).text()
+            unit_quantity = self.destinationModel.item(row, 3).text()
+
+            # Build a dictionary for this item and add it to our list
+            item_data = {
+                'პროდუქტის სახელი': product_name,
+                'რაოდენობა': quantity,
+                'ერთეულის რაოდენობა': unit_quantity,
+                'ფასი': price
+            }
+            context_list.append(item_data)
+        invoice_number = random.randint(1000, 9999)
+        # 2. Create a single, comprehensive context dictionary for Jinja2
+        invoice_context = {
+            'invoice_number': invoice_number,  # Replace with a real invoice number
+            'created_date': datetime.date.today().strftime('%Y-%m-%d'),
+            'items': context_list,  # This is the list we will loop through in HTML
+            'total_price': f"{total_price:.2f}"
+        }
+
+        # 3. Move the PDF generation logic OUTSIDE the loop, and only run it once.
+        try:
+            template_loader = jinja2.FileSystemLoader('./')
+            template_env = jinja2.Environment(loader=template_loader)
+            template = template_env.get_template('invoice.html')
+            output_text = template.render(invoice_context)
+
+            # Ensure wkhtmltopdf is installed and the path is correct
+            config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+            pdfkit.from_string(output_text, f'invoice({datetime.date.today().strftime('%Y-%m-%d')})'
+                                            f'#{invoice_number}.pdf',
+                               configuration=config)
+            QMessageBox.information(self, "PDF Created", "ინვოისი წარმატებით შეიქმნა!")
+        except Exception as e:
+            QMessageBox.critical(self, "PDF Error", f"ინვოისის შექმნა ვერ მოხერხდა: {e}")
+
+    def delete_product(self):
+        selected_indexes = self.basket.selectionModel().selectedRows()
+        if selected_indexes:
+            # Get the row index of the first selected item
+            row_to_delete = selected_indexes[0].row()
+
+            # Add a print statement to confirm the function is running
+            print(f"Deleting row: {row_to_delete}")
+
+            # Remove the row from the model
+            self.destinationModel.removeRow(row_to_delete)
+
+            # Recalculate the grand total after deleting the row
+            self.update_grand_total()
+            QMessageBox.information(self, "Success", "პროდუქტი წარმატებით წაიშალა!")
+        else:
+            # If no row is selected, show a warning message
+            QMessageBox.warning(self, "Selection Error", "გთხოვთ აირჩიოთ წასაშლელი პროდუქტი.")
 
 
