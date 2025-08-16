@@ -10,9 +10,9 @@ class Database:
         try:
             return psycopg2.connect(
                 host="localhost",
-                dbname="melodia",
-                user="melodia",
-                password="melodia",
+                dbname="postgres",
+                user="postgres",
+                password="Eleneliza1984",
                 port=5432
             )
         except Exception as e:
