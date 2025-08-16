@@ -6,6 +6,10 @@ import sys
 from main_menu import MenuWindow
 from user_system import UserSystem, RecoverPass
 
+from database import Database
+
+db = Database()
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
