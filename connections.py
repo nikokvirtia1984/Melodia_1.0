@@ -1,4 +1,7 @@
 import datetime
+import os
+from user_system import UserSystem
+import logging
 import jinja2
 import pdfkit
 import random
@@ -414,7 +417,7 @@ class MaterTableView(QWidget):
 
 
 class MerchantTable(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, current_username=''):
         super().__init__(parent)
         loadUi('ui/merchant.ui', self)
         self.sourceModel = QStandardItemModel()
@@ -423,13 +426,13 @@ class MerchantTable(QWidget):
         self.filter_name.textChanged.connect(self.filter_item_with_name)
         self.merchant_table.setModel(self.sourceModel)
         self.basket.setModel(self.destinationModel)
-
+        self.username = UserSystem()
         self.merchant_table.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
         self.merchant_table.setSelectionMode(QTableView.SelectionMode.SingleSelection)
         self.merchant_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.merchant_table.resizeColumnsToContents()  # Often conflicts with Stretch, keep if specific columns are too wide/narrow
         # self.merchant_table.horizontalHeader().setStretchLastSection(True) # Only if you want last section to take all remaining space
-
+        self.current_username = current_username
         self.basket.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         # Ensure the basket table cells are editable by double-click
         # Default is usually QAbstractItemView.DoubleClicked or EditKeyPressed
@@ -453,6 +456,13 @@ class MerchantTable(QWidget):
         # This will now handle updates for changes in Quantity, Price, OR Unit Quantity
         self.destinationModel.dataChanged.connect(self.handle_basket_data_change)
         self.basket.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
+        # --- Configure the logger ---
+        logging.basicConfig(
+            filename='checkout.log',
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s'
+        )
+        # --- End of logger configuration ---
         self.load_qss('ui/Adaptic.qss')
         self.load_data()
         self.basket.resizeColumnsToContents()
@@ -797,10 +807,12 @@ class MerchantTable(QWidget):
             }
             context_list.append(item_data)
         invoice_number = random.randint(1000, 9999)
+        created_date = datetime.date.today().strftime('%Y-%m-%d')
+        created_time = datetime.datetime.now().strftime('%H:%M:%S')
         # 2. Create a single, comprehensive context dictionary for Jinja2
         invoice_context = {
             'invoice_number': invoice_number,  # Replace with a real invoice number
-            'created_date': datetime.date.today().strftime('%Y-%m-%d'),
+            'created_date': f'{created_date} / {created_time}',
             'items': context_list,  # This is the list we will loop through in HTML
             'total_price': f"{total_price:.2f}"
         }
@@ -814,10 +826,55 @@ class MerchantTable(QWidget):
 
             # Ensure wkhtmltopdf is installed and the path is correct
             config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
-            pdfkit.from_string(output_text, f'invoice({datetime.date.today().strftime('%Y-%m-%d')})'
-                                            f'#{invoice_number}.pdf',
+            filename = f'Invoice({created_date})#{invoice_number}.pdf'
+            full_path = os.path.join('invoices', filename)
+            pdfkit.from_string(output_text, full_path,
                                configuration=config)
-            QMessageBox.information(self, "PDF Created", "ინვოისი წარმატებით შეიქმნა!")
+            database_changes = QMessageBox.question(self, 'მონაცემთა ბაზაში ცვლილებების შეტანა', 'შევიტანო ბაზაში ცვლილებები?',
+                                                    QMessageBox.StandardButton.Yes, QMessageBox.StandardButton.No)
+            if database_changes == QMessageBox.StandardButton.Yes:
+                # --- START OF CORRECTED CODE FOR DATABASE UPDATE ---
+                try:
+                    with db.connect() as conn:
+                        with conn.cursor() as cursor:
+                            for item in context_list:
+                                product_name = item['პროდუქტის სახელი']
+                                quantity_sold = item['რაოდენობა']
+
+                                # Find the product's COD_MAT (code) from mater1 table
+                                cursor.execute(
+                                    "SELECT \"COD_MAT\" FROM public.mater1 WHERE \"NAM_MAT\" = %s",
+                                    (product_name,)
+                                )
+                                cod_mat = cursor.fetchone()
+
+                                if cod_mat:
+                                    # Use the COD_MAT to update the quantity in the nashti table
+                                    cursor.execute(
+                                        """
+                                        UPDATE public.nashti 
+                                        SET "NAST" = "NAST" - %s 
+                                        WHERE "COD_MAT" = %s
+                                        """,
+                                        (quantity_sold, cod_mat[0])
+                                    )
+                                else:
+                                    logging.warning(
+                                        f"Product '{product_name}' not found in database. Stock not updated.")
+
+                            conn.commit()
+                    QMessageBox.information(self, "Success", "მონაცემები წარმატებით განახლდა!")
+                    logging.info(f"Database updated for checkout. Invoice: {invoice_number}")
+                except Exception as db_e:
+                    QMessageBox.critical(self, "Database Error", f"მონაცემების განახლება ვერ მოხერხდა: {db_e}")
+                    logging.error(f"Database update failed for invoice {invoice_number}: {db_e}")
+                # --- END OF CORRECTED CODE ---
+            logging.info(f"Checkout successful. Username: {self.current_username} . Invoice created: {full_path}")
+            reply = QMessageBox.question(self, 'ინვოისის ამობეჭდვა', 'ინვოისი წარმატებით შეიქმნა!, გსურთ ამობეჭდვა?',
+                                         QMessageBox.StandardButton.Yes, QMessageBox.StandardButton.No )
+            # QMessageBox.standardButton(self, "PDF Created", "ინვოისი წარმატებით შეიქმნა!")
+            if reply == QMessageBox.StandardButton.Yes:
+                os.startfile(full_path)
         except Exception as e:
             QMessageBox.critical(self, "PDF Error", f"ინვოისის შექმნა ვერ მოხერხდა: {e}")
 
@@ -828,7 +885,7 @@ class MerchantTable(QWidget):
             row_to_delete = selected_indexes[0].row()
 
             # Add a print statement to confirm the function is running
-            print(f"Deleting row: {row_to_delete}")
+            # print(f"Deleting row: {row_to_delete}")
 
             # Remove the row from the model
             self.destinationModel.removeRow(row_to_delete)
@@ -841,3 +898,7 @@ class MerchantTable(QWidget):
             QMessageBox.warning(self, "Selection Error", "გთხოვთ აირჩიოთ წასაშლელი პროდუქტი.")
 
 
+# class ReturnProduct(QWidget):
+#     def __init__(self, parent=None):
+#         super().__init__(parent)
+#         loadUi()

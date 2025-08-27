@@ -60,7 +60,7 @@ class MenuWindow(QMainWindow):
         self.add_product_window.show()
 
     def show_merchant(self):
-        self.merchant_table_view = MerchantTable()
+        self.merchant_table_view = MerchantTable(current_username=self.username)
         self.merchant_table_view.showMaximized()
         self.merchant_table_view.show()
 
