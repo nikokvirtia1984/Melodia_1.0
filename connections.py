@@ -14,7 +14,7 @@ from PyQt6.uic import loadUi
 from typing import List, Union, Dict, Any
 from user_system import UserSystem
 import re
-
+from return_function import ReturnProduct
 from database import Database
 
 db = Database()
@@ -469,7 +469,11 @@ class MerchantTable(QWidget):
         self.checkout_button.clicked.connect(self.checkout)
         self.delete_button.clicked.connect(self.delete_product)
         self.basket.installEventFilter(self)
-        
+        self.return_2.clicked.connect(self.show_return_table)
+
+    def show_return_table(self):
+        self.return_table = ReturnProduct()
+        self.return_table.show()
 
     def _apply_filter(self, filter_text, column):
         """Helper method to apply filtering to a specific column"""
@@ -806,7 +810,7 @@ class MerchantTable(QWidget):
                 'ფასი': price
             }
             context_list.append(item_data)
-        invoice_number = random.randint(1000, 9999)
+        invoice_number = random.randint(100000, 999999)
         created_date = datetime.date.today().strftime('%Y-%m-%d')
         created_time = datetime.datetime.now().strftime('%H:%M:%S')
         # 2. Create a single, comprehensive context dictionary for Jinja2
@@ -816,7 +820,33 @@ class MerchantTable(QWidget):
             'items': context_list,  # This is the list we will loop through in HTML
             'total_price': f"{total_price:.2f}"
         }
+        with db.connect() as conn:
+            with conn.cursor() as cursor:
+                # 1. Insert the main invoice record first
+                cursor.execute(
+                    """
+                    INSERT INTO invoices (invoice_id, username, total_price, created_at) 
+                    VALUES (%s, %s, %s, %s)
+                    """,
+                    (invoice_number, self.current_username, total_price, f'{created_date}/{created_time}')
+                )
 
+                # 2. Update stock and insert each product into the 'operations' table
+                for item in context_list:
+                    product_name = item['პროდუქტის სახელი']
+                    quantity_sold = int(item['რაოდენობა'])
+                    # Insert a row for each item in the 'operations' table
+                    cursor.execute(
+                        """
+                        INSERT INTO operations (
+                            invoice_id, product_name, quantity, item_quantity, product_price, date
+                        ) VALUES (%s, %s, %s, %s, %s, %s)
+                        """,
+                        (invoice_number, item['პროდუქტის სახელი'], quantity_sold, item['ერთეულის რაოდენობა'],
+                         float(item['ფასი']), f'{created_date}/{created_time}')
+                    )
+                conn.commit()
+        #
         # 3. Move the PDF generation logic OUTSIDE the loop, and only run it once.
         try:
             template_loader = jinja2.FileSystemLoader('./')
@@ -898,7 +928,3 @@ class MerchantTable(QWidget):
             QMessageBox.warning(self, "Selection Error", "გთხოვთ აირჩიოთ წასაშლელი პროდუქტი.")
 
 
-# class ReturnProduct(QWidget):
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#         loadUi()
