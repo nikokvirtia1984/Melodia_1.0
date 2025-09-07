@@ -1,0 +1,42 @@
+2025-08-26 21:36:57,411 - INFO - Checkout successful. Invoice created: invoices\Invoice(2025-08-26)#6972.pdf
+2025-08-26 22:00:55,623 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-26)#7599.pdf
+2025-08-27 15:54:29,975 - ERROR - Database update failed for invoice 8333: relation "products" does not exist
+LINE 1: UPDATE products SET quantity = quantity - '5' WHERE name = '...
+               ^
+
+2025-08-27 15:54:29,976 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-27)#8333.pdf
+2025-08-27 15:55:22,848 - INFO - Database updated for checkout. Invoice: 7592
+2025-08-27 15:55:22,849 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-27)#7592.pdf
+2025-08-27 15:56:21,589 - INFO - Database updated for checkout. Invoice: 9007
+2025-08-27 15:56:21,590 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-27)#9007.pdf
+2025-08-28 11:43:50,902 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-28)#2570.pdf
+2025-08-29 10:05:01,441 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#3886.pdf
+2025-08-29 10:05:23,908 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#6350.pdf
+2025-08-29 10:19:48,061 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#6290.pdf
+2025-08-29 10:21:04,800 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#6477.pdf
+2025-08-29 10:22:29,505 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#3215.pdf
+2025-08-29 10:23:20,606 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#9289.pdf
+2025-08-29 10:24:23,428 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#8214.pdf
+2025-08-29 10:25:16,406 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#5178.pdf
+2025-08-29 10:26:03,259 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#3291.pdf
+2025-08-31 12:34:18,502 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-31)#9999.pdf
+2025-08-31 12:37:08,825 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-31)#896147.pdf
+2025-08-31 13:16:10,758 - INFO - Checkout successful | User: niko | Invoice: 1433 | Total: 142.19 | File: invoices\invoice_2025-08-31_13-16-01_1433.pdf
+2025-08-31 13:17:32,054 - ERROR - Database update failed for invoice 5281: column "quantity" of relation "operations" does not exist
+LINE 3: ...                        invoice_id, product_name, quantity, ...
+                                                             ^
+
+2025-08-31 13:17:32,055 - INFO - Checkout successful | User: niko | Invoice: 5281 | Total: 139.09 | File: invoices\invoice_2025-08-31_13-17-19_5281.pdf
+2025-08-31 14:15:15,062 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-31)#436265.pdf
+2025-08-31 21:38:45,928 - INFO - Database updated for checkout. Invoice: 580853
+2025-08-31 21:38:45,937 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-31)#580853.pdf
+2025-08-31 21:43:27,243 - INFO - Database updated for checkout. Invoice: 783776
+2025-08-31 21:43:27,243 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-31)#783776.pdf
+2025-08-31 21:46:24,627 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-31)#662844.pdf
+2025-09-02 22:45:46,400 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-02)#678961.pdf
+2025-09-03 12:04:44,598 - INFO - Database updated for checkout. Invoice: 827653
+2025-09-03 12:04:44,607 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-03)#827653.pdf
+2025-09-03 14:15:21,726 - INFO - Database updated for checkout. Invoice: 457668
+2025-09-03 14:15:21,736 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-03)#457668.pdf
+2025-09-03 14:18:26,554 - INFO - Database updated for checkout. Invoice: 526224
+2025-09-03 14:18:26,554 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-03)#526224.pdf

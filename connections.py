@@ -300,21 +300,6 @@ class MaterTableView(QWidget):
         self.filter_generic.textChanged.connect(self.filter_item_with_generic)
         self.filter_code.textChanged.connect(self.filter_item_with_code)
 
-    # def get_db_connection(self):
-    #     """Establish database connection with error handling"""
-    #     try:
-    #         return psycopg2.connect(
-    #             host="localhost",
-    #             dbname="postgres",
-    #             user="postgres",
-    #             password="Eleneliza1984",
-    #             port=5432
-    #         )
-    #     except Exception as e:
-    #         QMessageBox.critical(self, "Database Error",
-    #                              f"Connection failed: {str(e)}")
-    #         raise
-
     def load_data(self):
         try:
             # with self.get_db_connection() as conn:
@@ -495,73 +480,75 @@ class MerchantTable(QWidget):
         # Define column indices for clarity
         customer_qty_col_idx = 1
         product_unit_price_col_idx = 2
-        sold_internal_units_col_idx = 3  # This is the user-editable 'ერთეულის რაოდენობა'
+        sold_internal_units_col_idx = 3
         total_col_idx = 4
 
-        # Important: The calculation should happen if the user changes QUANTITY, PRICE, OR UNIT_QUANTITY
+        # The calculation should happen if a quantity or price column is changed
         if changed_col in [customer_qty_col_idx, product_unit_price_col_idx, sold_internal_units_col_idx]:
             try:
-                # 1. Get customer's desired quantity of product units (რაოდენობა)
+                # Get data from the row
                 customer_qty_item = self.destinationModel.item(changed_row, customer_qty_col_idx)
-                customer_qty_str = customer_qty_item.text() if customer_qty_item else "0"
-                customer_qty = int(customer_qty_str)
-
-                # 2. Get the editable unit quantity (ერთეულის რაოდენობა)
                 sold_internal_units_item = self.destinationModel.item(changed_row, sold_internal_units_col_idx)
-                sold_internal_units_str = sold_internal_units_item.text() if sold_internal_units_item else "0"
-                sold_internal_units = int(sold_internal_units_str)
-
-
-                # 3. Get the original parsed product_unit_quantity (e.g., 80 from #80ტ)
-                # This value was stored in UserRole + 3 when the row was first added.
-                original_parsed_product_total_internal_units = sold_internal_units_item.data(
-                    Qt.ItemDataRole.UserRole + 3)
-                if original_parsed_product_total_internal_units is None:
-                    original_parsed_product_total_internal_units = 0  # Default if not found/stored
-
-                # 4. Get the price per product unit (პროდუქტის ღირებულება)
                 price_item = self.destinationModel.item(changed_row, product_unit_price_col_idx)
+
+                # Use '0' as default for empty cells
+                customer_qty_str = customer_qty_item.text() if customer_qty_item else "0"
+                sold_internal_units_str = sold_internal_units_item.text() if sold_internal_units_item else "0"
                 price_str = price_item.text() if price_item else "0.0"
+
+                customer_qty = float(customer_qty_str)
+                sold_internal_units = float(sold_internal_units_str)
                 product_unit_price = float(price_str)
 
-                new_total = 0.0  # Initialize total
+                # Get the original parsed product_unit_quantity from the UserRole
+                original_parsed_product_total_internal_units = sold_internal_units_item.data(
+                    Qt.ItemDataRole.UserRole + 3) or 0
 
-                # Apply the special calculation rule based on your clarified logic:
-                # Condition:
-                # 1. 'რაოდენობა' (customer_qty) is 1
-                # 2. The original parsed 'ერთეულის რაოდენობა' (original_parsed_product_total_internal_units) is more than 0
-                # 3. The user-edited 'ერთეულის რაოდენობა' (sold_internal_units) is not equal the original parsed quantity
-                if (customer_qty == 1 and
-                        original_parsed_product_total_internal_units > 0 and
-                        sold_internal_units > 0 and  # Ensure sold_internal_units is also positive for valid calculations
-                        sold_internal_units != original_parsed_product_total_internal_units):
+                new_total = 0.0
 
-                    # Calculate price per individual internal item
-                    # This could cause ZeroDivisionError if original_parsed_product_total_internal_units is 0
-                    if original_parsed_product_total_internal_units == 0:
-                        raise ZeroDivisionError(
-                            "Original product unit quantity cannot be zero for partial sale calculation.")
+                # --- DYNAMIC CALCULATION LOGIC ---
+                if changed_col == sold_internal_units_col_idx:
+                    # Scenario 1: User changed 'ერთეულის რაოდენობა' (sold_internal_units)
+                    if original_parsed_product_total_internal_units > 0:
+                        # Calculate new 'რაოდენობა' (customer_qty) and round it
+                        calculated_customer_qty = sold_internal_units / original_parsed_product_total_internal_units
+                        self.destinationModel.setData(
+                            self.destinationModel.index(changed_row, customer_qty_col_idx),
+                            f"{calculated_customer_qty:.2f}",
+                            Qt.ItemDataRole.DisplayRole
+                        )
+                        # Calculate the new total based on internal units
+                        new_total = (
+                                                product_unit_price / original_parsed_product_total_internal_units) * sold_internal_units
+                    else:
+                        # If original units are 0, just use the entered values
+                        new_total = customer_qty * product_unit_price
 
-                    price_per_internal_item = product_unit_price / original_parsed_product_total_internal_units
-
-                    # Total is then price per internal item * number of internal items being sold
-                    new_total = price_per_internal_item * sold_internal_units
-                    total_amount = 0.0
-
-
-
-                else:
-                    # Standard calculation for all other cases:
-                    # (number of product units) * (price per product unit)
+                elif changed_col == customer_qty_col_idx:
+                    # Scenario 2: User changed 'რაოდენობა' (customer_qty)
+                    # Update 'ერთეულის რაოდენობა' (sold_internal_units)
+                    calculated_sold_units = customer_qty * original_parsed_product_total_internal_units
+                    self.destinationModel.setData(
+                        self.destinationModel.index(changed_row, sold_internal_units_col_idx),
+                        str(calculated_sold_units),
+                        Qt.ItemDataRole.DisplayRole
+                    )
+                    # Standard total price calculation
                     new_total = customer_qty * product_unit_price
 
-                # Update the 'სულ' (Total) column in the same row
+                else:
+                    # Scenario 3: User changed the price, or some other case
+                    new_total = customer_qty * product_unit_price
+
+                # Update the 'სულ' (Total) column
                 self.destinationModel.setData(
                     self.destinationModel.index(changed_row, total_col_idx),
                     f"{new_total:.2f}",
                     Qt.ItemDataRole.DisplayRole
                 )
+
                 self.update_grand_total()
+
             except ValueError:
                 QMessageBox.warning(self, "Input Error",
                                     "Please enter valid numeric values for 'რაოდენობა', 'ერთეულის რაოდენობა', and 'პროდუქტის ღირებულება'.")
@@ -743,7 +730,7 @@ class MerchantTable(QWidget):
         except ValueError:
             price = 0.0
 
-        quantity_in_basket_initial = 1  # Initial customer quantity when adding to basket
+        quantity_in_basket_initial = 0  # Initial customer quantity when adding to basket
 
         # Initial total calculation will use standard logic
         initial_total = quantity_in_basket_initial * price
@@ -752,7 +739,7 @@ class MerchantTable(QWidget):
             QStandardItem(product_name_full),
             QStandardItem(str(quantity_in_basket_initial)),
             QStandardItem(f"{price:.2f}"),
-            QStandardItem(str(product_unit_quantity_parsed_from_name)),
+            QStandardItem(str(0)),
             # This is the *initial* editable value for 'ერთეულის რაოდენობა'
             QStandardItem(f"{initial_total:.2f}")
         ]
