@@ -6,9 +6,7 @@ from user_system import UserSystem, ViewUsersWindow
 from connections import MaterTable, MaterTableView, MerchantTable
 
 from database import Database
-
 db = Database()
-
 
 
 class MenuWindow(QMainWindow):
@@ -95,9 +93,7 @@ class UserRegistration(QWidget):
         email = self.email.text()
         phone = self.phone.text()
         position = self.position.currentText()
-
         db.connect()
-
 
         if not all([username, password, email, phone, position]):
             QMessageBox.warning(self, 'რეგისტრაციის შეცდომა', 'ყველა ველი უნდა შეივსოს')
@@ -106,7 +102,6 @@ class UserRegistration(QWidget):
         try:
             hashed_pw = self._hash_password(password)
 
-            # with self.user_db._get_connection() as conn:
             with db.connect() as conn:
                 with conn.cursor() as cursor:
                     cursor.execute(
@@ -120,6 +115,11 @@ class UserRegistration(QWidget):
                     conn.commit()
 
             QMessageBox.information(self, 'მომხმარებლის დამატება.', 'ახალი მომხმარებელი წარმატებით დაემატა.')
+            self.username.clear()
+            self.password.clear()
+            self.email.clear()
+            self.phone.clear()
+
             return True
 
         except psycopg2.IntegrityError as e:

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>421</height>
+    <height>435</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <widget class="QPushButton" name="login_button">
     <property name="geometry">
      <rect>
-      <x>140</x>
+      <x>150</x>
       <y>290</y>
       <width>200</width>
       <height>51</height>
@@ -37,7 +37,7 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>126</y>
+      <y>130</y>
       <width>360</width>
       <height>41</height>
      </rect>
@@ -56,7 +56,7 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>196</y>
+      <y>190</y>
       <width>360</width>
       <height>41</height>
      </rect>
@@ -79,8 +79,8 @@
      <rect>
       <x>150</x>
       <y>50</y>
-      <width>200</width>
-      <height>30</height>
+      <width>251</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -96,10 +96,10 @@
    <widget class="QLabel" name="pass_restore">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>182</x>
       <y>250</y>
-      <width>181</width>
-      <height>31</height>
+      <width>135</width>
+      <height>23</height>
      </rect>
     </property>
     <property name="font">
@@ -112,6 +112,28 @@
 </string>
     </property>
    </widget>
+   <widget class="QPushButton" name="initial_setup">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>340</y>
+      <width>200</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>BPG Glaho</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>ინიციალიზაცია</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -119,7 +141,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

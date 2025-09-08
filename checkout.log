@@ -40,3 +40,15 @@ LINE 3: ...                        invoice_id, product_name, quantity, ...
 2025-09-03 14:15:21,736 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-03)#457668.pdf
 2025-09-03 14:18:26,554 - INFO - Database updated for checkout. Invoice: 526224
 2025-09-03 14:18:26,554 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-03)#526224.pdf
+2025-09-08 21:55:45,606 - INFO - Database updated for checkout. Invoice: 534098
+2025-09-08 21:55:45,607 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-08)#534098.pdf
+2025-09-08 21:57:26,975 - INFO - Database updated for checkout. Invoice: 427475
+2025-09-08 21:57:26,976 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-08)#427475.pdf
+2025-09-08 22:00:19,547 - INFO - Database updated for checkout. Invoice: 465360
+2025-09-08 22:00:19,548 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-08)#465360.pdf
+2025-09-08 22:02:54,456 - INFO - Database updated for checkout. Invoice: 270669
+2025-09-08 22:02:54,457 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-09-08)#270669.pdf
+2025-09-08 22:06:09,524 - INFO - Database updated for checkout. Invoice: 858613
+2025-09-08 22:06:09,524 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-09-08)#858613.pdf
+2025-09-09 00:50:49,185 - INFO - Database updated for checkout. Invoice: 846697
+2025-09-09 00:50:49,185 - INFO - Checkout successful. Username: root . Invoice created: invoices\Invoice(2025-09-09)#846697.pdf

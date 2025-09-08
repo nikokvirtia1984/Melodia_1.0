@@ -10,7 +10,6 @@ import jinja2
 import datetime
 
 from database import Database
-
 db = Database()
 
 

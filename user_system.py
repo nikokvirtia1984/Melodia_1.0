@@ -13,50 +13,38 @@ import bcrypt
 import logging
 import os
 from getpass import getpass  # For secure password input
-
-from database import Database
-
-db = Database()
-
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6.QtWidgets import QWidget, QMessageBox, QTableView, QHeaderView, QPushButton
 from PyQt6.uic import loadUi
+
+from database import Database
+db = Database()
 
 
 class UserSystem:
     def __init__(self):
         self._initialize_db()
 
-    # def _get_connection(self):
-    #     """Establish and return a database connection"""
-    #     return psycopg2.connect(
-    #         host="localhost",
-    #         dbname="postgres",
-    #         user="postgres",
-    #         password="Eleneliza1984",
-    #         port=5432
-    #     )
-
     def _initialize_db(self):
-        """Initialize the database table"""
-        try:
-            # with self._get_connection() as conn:
-            with db.connect() as conn:
-                conn.autocommit = True
-                with conn.cursor() as cursor:
-                    cursor.execute('''
-                        CREATE TABLE IF NOT EXISTS users (
-                            id SERIAL PRIMARY KEY,
-                            username VARCHAR(255) UNIQUE NOT NULL,
-                            password TEXT NOT NULL,
-                            email VARCHAR(255) UNIQUE,
-                            phone VARCHAR(20) UNIQUE,
-                            position VARCHAR(100) NOT NULL,
-                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                        )
-                    ''')
-        except psycopg2.Error as e:
-            print(f"Database initialization error: {e}")
+        pass
+        # """Initialize the database table"""
+        # try:
+        #     with db.connect() as conn:
+        #         conn.autocommit = True
+        #         with conn.cursor() as cursor:
+        #             cursor.execute('''
+        #                 CREATE TABLE IF NOT EXISTS users (
+        #                     id SERIAL PRIMARY KEY,
+        #                     username VARCHAR(255) UNIQUE NOT NULL,
+        #                     password TEXT NOT NULL,
+        #                     email VARCHAR(255) UNIQUE,
+        #                     phone VARCHAR(20) UNIQUE,
+        #                     position VARCHAR(100) NOT NULL,
+        #                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        #                 )
+        #             ''')
+        # except psycopg2.Error as e:
+        #     print(f"Database initialization error: {e}")
 
     def _hash_password(self, password):
         """Hash a password for storage"""
@@ -82,7 +70,6 @@ class UserSystem:
                    or (False, None) if login fails
         """
         try:
-            # with self._get_connection() as conn:
             with db.connect() as conn:
                 with conn.cursor() as cursor:
                     cursor.execute(
@@ -157,15 +144,6 @@ class RecoverPass(QWidget):
             QMessageBox.warning(self, "Error", "Please enter an email address")
             return
 
-        # try:
-        #     # Check email in PostgreSQL
-        #     conn = psycopg2.connect(
-        #         host="localhost",
-        #         dbname="postgres",
-        #         user="postgres",
-        #         password="Eleneliza1984",
-        #         port=5432
-        #     )
         try:
             conn = db.connect()
             cursor = conn.cursor()
@@ -270,13 +248,6 @@ class RecoverPass(QWidget):
         try:
             hash_pass = self._hash_password(new_pass)
             conn = db.connect()
-            # conn = psycopg2.connect(
-            #     host="localhost",
-            #     dbname="postgres",
-            #     user="postgres",
-            #     password="Eleneliza1984",
-            #     port=5432
-            # )
             with conn:
                 with conn.cursor() as cursor:
                     cursor.execute("UPDATE users SET password = %s WHERE email = %s", (hash_pass.decode(), self.current_email))
@@ -307,13 +278,6 @@ class ViewUsersWindow(QWidget):
     def get_db_connection(self):
         """Establish database connection with error handling"""
         try:
-            # return psycopg2.connect(
-            #     host="localhost",
-            #     dbname="postgres",
-            #     user="postgres",
-            #     password="Eleneliza1984",
-            #     port=5432
-            # )
             return db.connect()
         except Exception as e:
             QMessageBox.critical(self, "Database Error",
@@ -324,7 +288,6 @@ class ViewUsersWindow(QWidget):
 
         """Load and display user data with proper formatting"""
         try:
-            # with self.get_db_connection() as conn:
             with db.connect() as conn:
                 with conn.cursor() as cursor:
                     cursor.execute("""
@@ -364,7 +327,6 @@ class ViewUsersWindow(QWidget):
 
         """Save all edited data to the database"""
         try:
-            # with self.get_db_connection() as conn:
             with db.connect() as conn:
                 with conn.cursor() as cursor:
                     for row in range(self.model.rowCount()):
@@ -419,7 +381,6 @@ class ViewUsersWindow(QWidget):
 
             if reply == QMessageBox.StandardButton.Yes:
                 with db.connect() as conn:
-                # with self.get_db_connection() as conn:
                     with conn.cursor() as cursor:
                         cursor.execute(
                             "DELETE FROM users WHERE id = ANY(%s)",

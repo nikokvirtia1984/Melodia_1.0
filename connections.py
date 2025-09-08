@@ -15,8 +15,8 @@ from typing import List, Union, Dict, Any
 from user_system import UserSystem
 import re
 from return_function import ReturnProduct
-from database import Database
 
+from database import Database
 db = Database()
 
 
@@ -77,7 +77,6 @@ class MaterTable(QWidget):
     def _initialize_db(self) -> None:
         """Initialize database schema with proper error handling"""
         try:
-            # with self.user_db._get_connection() as conn:
             with db.connect() as conn:
                 conn.autocommit = True
                 with conn.cursor() as cursor:
@@ -116,7 +115,7 @@ class MaterTable(QWidget):
         for column, definition in columns_to_add:
             try:
                 cursor.execute(f'''
-                    ALTER TABLE mater 
+                    ALTER TABLE mater
                     ADD COLUMN IF NOT EXISTS {column} {definition}
                 ''')
             except psycopg2.Error:
@@ -152,7 +151,6 @@ class MaterTable(QWidget):
         try:
             product_data = self.get_form_data()
 
-            # with self.user_db._get_connection() as conn:
             with db.connect() as conn:
                 with conn.cursor() as cursor:
                     try:
@@ -228,7 +226,6 @@ class MaterTable(QWidget):
     def _update_existing_product(self, product_data: Dict[str, Any]) -> None:
         """Update existing product record"""
         try:
-            # with self.user_db._get_connection() as conn:
             with db.connect() as conn:
                 with conn.cursor() as cursor:
                     cursor.execute('''
@@ -284,9 +281,6 @@ class MaterTable(QWidget):
         self.name.setFocus()
 
 
-
-
-
 class MaterTableView(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -302,7 +296,6 @@ class MaterTableView(QWidget):
 
     def load_data(self):
         try:
-            # with self.get_db_connection() as conn:
             with db.connect() as conn:
                 with conn.cursor() as cursor:
                     cursor.execute("""
@@ -334,12 +327,8 @@ class MaterTableView(QWidget):
         self.tableView.setModel(self.model)
         self.tableView.hideColumn(0) #Hiding Column you want to hide.
 
-
-
-
     def save_changes(self):
         try:
-            # with self.get_db_connection() as conn:
             with db.connect() as conn:
                 with conn.cursor() as cursor:
                     for row in range(self.model.rowCount()):
@@ -467,11 +456,9 @@ class MerchantTable(QWidget):
             match = item is not None and filter_text in item.text().lower()
             self.merchant_table.setRowHidden(row, not match)
 
-
     def filter_item_with_name(self):
         filter_text = self.filter_name.text().lower()
         self._apply_filter(filter_text, column=0)
-
 
     def handle_basket_data_change(self, top_left_index: QModelIndex, bottom_right_index: QModelIndex):
         changed_row = top_left_index.row()
@@ -594,21 +581,6 @@ class MerchantTable(QWidget):
 
         return super().eventFilter(obj, event)
 
-    # def get_db_connection(self):
-    #     """Establish database connection with error handling"""
-    #     try:
-    #         return psycopg2.connect(
-    #             host="localhost",
-    #             dbname="postgres",
-    #             user="postgres",
-    #             password="Eleneliza1984",
-    #             port=5432
-    #         )
-    #     except Exception as e:
-    #         QMessageBox.critical(self, "Database Error",
-    #                              f"Connection failed: {str(e)}")
-    #         raise
-
     def load_qss(self, filepath):
         """Loads a QSS file and applies it to the application."""
         qss_file = QFile(filepath)
@@ -625,7 +597,6 @@ class MerchantTable(QWidget):
 
     def load_data(self):
         try:
-            # with self.get_db_connection() as conn:
             with db.connect() as conn:
                 with conn.cursor() as cursor:
                     cursor.execute("""
@@ -913,5 +884,3 @@ class MerchantTable(QWidget):
         else:
             # If no row is selected, show a warning message
             QMessageBox.warning(self, "Selection Error", "გთხოვთ აირჩიოთ წასაშლელი პროდუქტი.")
-
-
