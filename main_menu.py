@@ -3,7 +3,8 @@ import psycopg2
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QWidget, QComboBox
 from PyQt6.uic import loadUi
 from user_system import UserSystem, ViewUsersWindow
-from connections import MaterTable, MaterTableView, MerchantTable
+from mater import MaterTable, MaterTableView
+from merchant import MerchantTable
 
 from database import Database
 db = Database()
@@ -40,7 +41,7 @@ class MenuWindow(QMainWindow):
         try:
             if not hasattr(self, 'user_management_window'):
                 self.user_management_window = ViewUsersWindow()
-            self.user_management_window.show()
+            self.user_management_window.showMaximized()
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Cannot open user management: {str(e)}")
 

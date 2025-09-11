@@ -55,3 +55,5 @@ LINE 3: ...                        invoice_id, product_name, quantity, ...
 2025-09-09 01:02:51,876 - INFO - Checkout successful. Username: root . Invoice created: invoices\Invoice(2025-09-09)#541247.pdf
 2025-09-09 01:03:00,124 - INFO - Database updated for checkout. Invoice: 698412
 2025-09-09 01:03:00,124 - INFO - Checkout successful. Username: root . Invoice created: invoices\Invoice(2025-09-09)#698412.pdf
+2025-09-11 23:24:04,143 - INFO - Database updated for checkout. Invoice: 560999
+2025-09-11 23:24:04,152 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-09-11)#560999.pdf
