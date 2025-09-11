@@ -34,9 +34,6 @@ class MaterTable(QWidget):
         self.setup_ui()
         self.setup_connections()
 
-        # Initialize database schema
-        self._initialize_db()
-
         # Set initial state
         self.save_button.setEnabled(False)
 
@@ -73,53 +70,6 @@ class MaterTable(QWidget):
             for field in self.mandatory_fields
         )
         self.save_button.setEnabled(all_valid)
-
-    def _initialize_db(self) -> None:
-        """Initialize database schema with proper error handling"""
-        try:
-            with db.connect() as conn:
-                conn.autocommit = True
-                with conn.cursor() as cursor:
-                    cursor.execute('''
-                        CREATE TABLE IF NOT EXISTS mater (
-                            id SERIAL PRIMARY KEY,
-                            name VARCHAR(255) NOT NULL,
-                            code VARCHAR(255) UNIQUE NOT NULL,
-                            division VARCHAR(255) NOT NULL,
-                            type VARCHAR(255) NOT NULL,
-                            cc VARCHAR(255) NOT NULL,
-                            rec VARCHAR(20) NOT NULL,
-                            referral VARCHAR(100) NOT NULL,
-                            generic VARCHAR(100) NOT NULL,
-                            storecon VARCHAR(100) NOT NULL,
-                            hc VARCHAR(100) UNIQUE NOT NULL,
-                            hc2 VARCHAR(100) UNIQUE NOT NULL,
-                            note TEXT,
-                            spec_code VARCHAR(100) UNIQUE NOT NULL,
-                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                        )
-                    ''')
-                    # Add any missing columns
-                    self._add_missing_columns(cursor)
-        except psycopg2.Error as e:
-            QMessageBox.critical(self, "Database Error",
-                                 f"Could not initialize database: {e}")
-
-    def _add_missing_columns(self, cursor) -> None:
-        """Ensure all required columns exist in the table"""
-        columns_to_add = [
-            ('name', 'VARCHAR(255) NOT NULL DEFAULT \'\''),
-            ('note', 'TEXT')
-        ]
-
-        for column, definition in columns_to_add:
-            try:
-                cursor.execute(f'''
-                    ALTER TABLE mater
-                    ADD COLUMN IF NOT EXISTS {column} {definition}
-                ''')
-            except psycopg2.Error:
-                pass  # Column already exists with different definition
 
     def get_form_data(self) -> Dict[str, Any]:
         """Collect and validate all form data"""
@@ -447,7 +397,7 @@ class MerchantTable(QWidget):
 
     def show_return_table(self):
         self.return_table = ReturnProduct()
-        self.return_table.show()
+        self.return_table.showMaximized()
 
     def _apply_filter(self, filter_text, column):
         """Helper method to apply filtering to a specific column"""
