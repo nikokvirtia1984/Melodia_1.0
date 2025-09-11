@@ -113,7 +113,16 @@ class UserRegistration(QWidget):
                         (username, hashed_pw.decode(), email, phone, position)
                     )
                     conn.commit()
-
+            if position == "ადმინისტრატორი":
+                with db.connect() as conn:
+                    cursor = conn.cursor()
+                    cursor.execute(
+                        """
+                        DELETE FROM public.users
+	                    WHERE username=%s
+	                    """,
+                        ("root",)
+                    )
             QMessageBox.information(self, 'მომხმარებლის დამატება.', 'ახალი მომხმარებელი წარმატებით დაემატა.')
             self.username.clear()
             self.password.clear()

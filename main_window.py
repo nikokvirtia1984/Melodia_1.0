@@ -1,7 +1,7 @@
 # from PyQt6.QtGui.QTextCursor import position
 from threading import current_thread
 
-from PyQt6.QtCore import QFile, QIODevice, QTextStream
+from PyQt6.QtCore import QFile, QIODevice, QTextStream, Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QWidget
 from PyQt6.uic import loadUi
 import sys
@@ -31,6 +31,9 @@ class MainWindow(QMainWindow):
         self.pass_restore.setOpenExternalLinks(False)
         self.pass_restore.linkActivated.connect(self.show_password_form)
         self.password_form = RecoverPass()
+        self.setWindowFlags(Qt.WindowType.CustomizeWindowHint |
+                            Qt.WindowType.WindowCloseButtonHint |
+                            Qt.WindowType.WindowMinimizeButtonHint)
 
     def is_first_run(self):
         with open("settings.json", "r") as file:
