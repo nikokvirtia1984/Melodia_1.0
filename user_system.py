@@ -1,3 +1,4 @@
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QMessageBox, QTableView, QHeaderView, QVBoxLayout
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6.uic import loadUi
@@ -112,6 +113,10 @@ class RecoverPass(QWidget):
         # self.pass_restore.setOpenExternalLinks(False)
         # self.pass_restore.linkActivated.connect(self.show_password_form)
         self.code_Button.clicked.connect(self.check_email_and_send_code)
+
+        self.setWindowFlags(Qt.WindowType.CustomizeWindowHint |
+                            Qt.WindowType.WindowCloseButtonHint |
+                            Qt.WindowType.WindowMinimizeButtonHint)
 
 
         # Store verification codes temporarily

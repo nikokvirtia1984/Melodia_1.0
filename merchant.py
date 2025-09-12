@@ -421,7 +421,7 @@ class MerchantTable(QWidget):
                 # 2. Update stock and insert each product into the 'operations' table
                 for item in context_list:
                     product_name = item['პროდუქტის სახელი']
-                    quantity_sold = int(item['რაოდენობა'])
+                    quantity_sold = float(item['რაოდენობა'])
                     # Insert a row for each item in the 'operations' table
                     cursor.execute(
                         """

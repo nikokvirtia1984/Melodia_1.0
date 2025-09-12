@@ -1,5 +1,6 @@
 import bcrypt
 import psycopg2
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QWidget, QComboBox
 from PyQt6.uic import loadUi
 from user_system import UserSystem, ViewUsersWindow
@@ -36,6 +37,9 @@ class MenuWindow(QMainWindow):
         self.view_mater.triggered.connect(self.show_mater)
         self.action_users.triggered.connect(self.show_user_management)
         self.merchant_button.clicked.connect(self.show_merchant)
+        self.setWindowFlags(Qt.WindowType.CustomizeWindowHint |
+                            Qt.WindowType.WindowCloseButtonHint |
+                            Qt.WindowType.WindowMinimizeButtonHint)
 
     def show_user_management(self):
         try:
@@ -47,7 +51,7 @@ class MenuWindow(QMainWindow):
 
     def show_mater(self):
         self.mater_table_window = MaterTableView()
-        self.mater_table_window.show()
+        self.mater_table_window.showMaximized()
 
     def show_registration(self):
         """Show the registration window"""
@@ -61,7 +65,6 @@ class MenuWindow(QMainWindow):
     def show_merchant(self):
         self.merchant_table_view = MerchantTable(current_username=self.username)
         self.merchant_table_view.showMaximized()
-        self.merchant_table_view.show()
 
     def logout(self) -> None:
         """Handle logout process by showing login window and closing this window."""
@@ -75,6 +78,10 @@ class UserRegistration(QWidget):
         loadUi('ui/registration.ui', self)
         self.registration_button.clicked.connect(self.register_user)
         self.user_db = UserSystem()
+
+        self.setWindowFlags(Qt.WindowType.CustomizeWindowHint |
+                            Qt.WindowType.WindowCloseButtonHint |
+                            Qt.WindowType.WindowMinimizeButtonHint)
 
 
     def _hash_password(self, password):

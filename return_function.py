@@ -1,5 +1,5 @@
 from typing import List
-from PyQt6.QtCore import QModelIndex
+from PyQt6.QtCore import QModelIndex, Qt
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6.QtWidgets import QWidget, QMessageBox, QTableView, QHeaderView
 from PyQt6.uic import loadUi
@@ -31,6 +31,7 @@ class ReturnProduct(QWidget):
         self.load_data()
         self.code_filter.textChanged.connect(self.filter_item_with_code)
         self.date_filter.textChanged.connect(self.filter_item_with_date)
+
     def load_data(self):
         try:
             with db.connect() as conn:

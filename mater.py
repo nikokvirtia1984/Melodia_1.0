@@ -1,5 +1,6 @@
 import random
 import psycopg2
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6.QtWidgets import (QWidget, QMessageBox, QLineEdit, QComboBox,
                              QTextEdit, QTableWidget, QCheckBox, QTableView, QHeaderView, QApplication)
@@ -328,6 +329,3 @@ class MaterTableView(QWidget):
             item = self.model.item(row, column)
             match = item is not None and filter_text in item.text().lower()
             self.tableView.setRowHidden(row, not match)
-
-
-
