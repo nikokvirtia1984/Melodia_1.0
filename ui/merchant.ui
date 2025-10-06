@@ -108,9 +108,9 @@
           <widget class="QLineEdit" name="lineEdit_12"/>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_12">
+          <widget class="QPushButton" name="info_button">
            <property name="text">
-            <string>PushButton</string>
+            <string>Information</string>
            </property>
           </widget>
          </item>

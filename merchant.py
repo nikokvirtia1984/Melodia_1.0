@@ -16,7 +16,10 @@ import re
 from return_function import ReturnProduct
 from user_system import UserSystem
 from database import Database
+from att_mat import MaterialAttributeTranslator
 db = Database()
+attmat = MaterialAttributeTranslator()
+from info_dialog import InfoDialog
 
 
 class MerchantTable(QWidget):
@@ -44,6 +47,7 @@ class MerchantTable(QWidget):
 
         self.merchant_table.doubleClicked.connect(self.paste_selected_row)
         self.merchant_table.installEventFilter(self)
+
 
         # --- Set the desired headers for the DESTINATION table (basket) ---
         self.destinationModel.setHorizontalHeaderLabels([
@@ -73,10 +77,43 @@ class MerchantTable(QWidget):
         self.delete_button.clicked.connect(self.delete_product)
         self.basket.installEventFilter(self)
         self.return_2.clicked.connect(self.show_return_table)
+        self.info_button.clicked.connect(self.show_info_window)
 
     def show_return_table(self):
         self.return_table = ReturnProduct()
         self.return_table.showMaximized()
+
+    def show_info_window(self):
+        """
+        Retrieves the selected product name from the Baskets table,
+        translates its attributes using attmat, and displays the InfoDialog.
+        """
+        # --- NEW STEP: Get the product name using the helper method ---
+        product_name = self.selected_product_info()
+
+        if not product_name:
+            # selected_product_info already showed a warning, so just exit
+            return
+
+        # 1. Use the MaterialAttributeTranslator to get the raw string
+        # This will use the actual DB if connected, or the test string otherwise.
+        raw_att_mat_string = attmat.get_material_attribute(product_name)
+
+        if raw_att_mat_string:
+            # 2. Translate the raw string into a descriptive list
+            translated_attributes = attmat.translate_attributes(raw_att_mat_string)
+
+            # 3. Create and show the dedicated dialog instance
+            dialog = InfoDialog(
+                translated_attributes=translated_attributes,
+                material_name=product_name,
+                parent=self
+            )
+            dialog.exec()
+        else:
+            QMessageBox.information(self, "ინფორმაცია", f"პროდუქტისთვის '{product_name}' ვერ მოიძებნა ატრიბუტები.")
+
+
 
     def _apply_filter(self, filter_text, column):
         """Helper method to apply filtering to a specific column"""
@@ -513,3 +550,25 @@ class MerchantTable(QWidget):
         else:
             # If no row is selected, show a warning message
             QMessageBox.warning(self, "Selection Error", "გთხოვთ აირჩიოთ წასაშლელი პროდუქტი.")
+
+    def selected_product_info(self):
+        # 1. Get the list of selected QModelIndex objects (one for each selected row)
+        selected_indexes = self.basket.selectionModel().selectedRows()
+
+        if not selected_indexes:
+            # Display warning if no row is selected
+            QMessageBox.warning(self, "Selection Error", "გთხოვთ აირჩიოთ პროდუქტი.")
+            return None  # Must return None, not the result of QMessageBox
+
+        # 2. Get the row number from the first selected index
+        selected_row = selected_indexes[0].row()
+
+        # 3. Use the row number to get the QStandardItem from the model (Column 0: Product Name)
+        product_name_item = self.destinationModel.item(selected_row, 0)
+
+        # 4. Extract the text (product name)
+        if product_name_item:
+            selected_product_name = product_name_item.text()
+            return selected_product_name
+
+        return None
