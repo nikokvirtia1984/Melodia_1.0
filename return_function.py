@@ -1,5 +1,5 @@
 from typing import List
-from PyQt6.QtCore import QModelIndex, Qt
+from PyQt6.QtCore import QModelIndex, Qt, pyqtSignal
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6.QtWidgets import QWidget, QMessageBox, QTableView, QHeaderView
 from PyQt6.uic import loadUi
@@ -10,10 +10,15 @@ import jinja2
 import datetime
 
 from database import Database
+
 db = Database()
 
 
+
 class ReturnProduct(QWidget):
+    # --- 1. DEFINE CUSTOM SIGNAL ---
+    product_returned = pyqtSignal()
+    # -------------------------------
     def __init__(self, parent=None):
         super().__init__(parent)
         loadUi("ui/return.ui", self)
@@ -31,6 +36,30 @@ class ReturnProduct(QWidget):
         self.load_data()
         self.code_filter.textChanged.connect(self.filter_item_with_code)
         self.date_filter.textChanged.connect(self.filter_item_with_date)
+
+
+    def load_merchant_data(self):
+        try:
+            with db.connect() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute("""
+                    SELECT
+                        m."NAM_MAT",          -- 0: პროდუქტის სახელი (Product Name)
+                        n."PRICE",            -- 1: პროდუქტის ღირებულება (Price)
+                        n."COD_MAT",          -- 2: დღ/სპ
+                        n."DAT_GOOD",         -- 3: ვარგისია
+                        n."NAST",             -- 4: ნაშთი (Stock)
+                        n."SER_NUM"           -- 5: სერიული ნომერი
+                    FROM
+                        public.mater1 AS m
+                    JOIN
+                        public.nashti AS n ON m."COD_MAT" = n."COD_MAT";
+                    """)
+                    column_names = [desc[0] for desc in cursor.description]
+                    self.display_source_data(cursor.fetchall(), column_names)
+        except Exception as e:
+            QMessageBox.critical(self, "Error",
+                                 f"Failed to load data:\n{str(e)}")
 
     def load_data(self):
         try:
@@ -123,18 +152,25 @@ class ReturnProduct(QWidget):
                             )
 
                             # Delete the record from the 'operations' table
-                            # cursor.execute(
-                            #     """
-                            #     DELETE FROM public.operations WHERE "invoice_id" = %s AND "product_name" = %s
-                            #     """,
-                            #     (invoice_id, product_name)
-                            # )
+                            cursor.execute(
+                                """
+                                DELETE FROM public.operations WHERE "invoice_id" = %s AND "product_name" = %s
+                                """,
+                                (invoice_id, product_name)
+                            )
                             conn.commit()
                             QMessageBox.information(self, "წარმატება", "პროდუქტი წარმატებით დაბრუნდა.")
-                            self.load_data()  # Refresh the table view
+                            self.load_data()
+                            # --- 2. EMIT SIGNAL TO REFRESH MERCHANT TABLE ---
+                            self.product_returned.emit()
+                            # ------------------------------------------------
+
+
+                            # Refresh the table view
                         else:
                             QMessageBox.warning(self, "შეცდომა",
-                                                f"პროდუქტი '{product_name}' მონაცემთა ბაზაში ვერ მოიძებნა.")
+                                              f"პროდუქტი '{product_name}' მონაცემთა ბაზაში ვერ მოიძებნა.")
+
 
             except Exception as e:
                 QMessageBox.critical(self, "Database Error", f"პროდუქტის დაბრუნება ვერ მოხერხდა: {e}")
@@ -218,3 +254,5 @@ class ReturnProduct(QWidget):
     def filter_item_with_date(self):
         filter_text = self.date_filter.text().lower()
         self._apply_filter(filter_text, column=7)
+
+

@@ -64,3 +64,22 @@ LINE 3: ...                        invoice_id, product_name, quantity, ...
 2025-09-12 22:55:59,568 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-09-12)#309694.pdf
 2025-09-12 23:03:01,268 - INFO - Database updated for checkout. Invoice: 172976
 2025-09-12 23:03:01,269 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-09-12)#172976.pdf
+2025-10-14 11:55:43,828 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-14)#870725.pdf
+2025-10-14 12:15:53,453 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-14)#264637.pdf
+2025-10-14 12:17:01,483 - INFO - Database updated for checkout. Invoice: 400322
+2025-10-14 12:17:01,483 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-14)#400322.pdf
+2025-10-15 19:15:15,179 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#897772.pdf
+2025-10-15 19:15:29,179 - INFO - Database updated for checkout. Invoice: 102361
+2025-10-15 19:15:29,179 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#102361.pdf
+2025-10-15 19:15:56,385 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#836166.pdf
+2025-10-15 19:16:54,965 - INFO - Database updated for checkout. Invoice: 597468
+2025-10-15 19:16:54,965 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#597468.pdf
+2025-10-15 19:33:10,692 - INFO - Database updated for checkout. Invoice: 939508
+2025-10-15 19:33:10,693 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#939508.pdf
+2025-10-15 19:33:57,615 - INFO - Database updated for checkout. Invoice: 245587
+2025-10-15 19:33:57,615 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#245587.pdf
+2025-10-15 19:42:10,079 - INFO - Database updated for checkout. Invoice: 155786
+2025-10-15 19:42:10,081 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#155786.pdf
+2025-10-15 20:04:39,765 - INFO - Database updated for checkout. Invoice: 619191
+2025-10-15 20:04:39,766 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#619191.pdf
+2025-10-24 20:42:21,302 - INFO - Product added from Generic: \u10d0\u10e5\u10e2\u10dd\u10d5\u10d4\u10d2\u10d8\u10dc\u10d8 \u10db\u10d0\u10da\u10d0\u10db\u10dd 5% 20\u10d2 \u10e2\u10e3\u10d1, Price: 3.8, Qty: 1

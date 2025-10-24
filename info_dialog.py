@@ -9,7 +9,6 @@ class InfoDialog(QDialog):
 
         # Load the dialog UI onto THIS new QDialog instance
         loadUi('ui/info_window.ui', self)
-
         self.setWindowTitle(f"თვისებები: {material_name}")
 
         # --- Assumption ---

@@ -311,9 +311,9 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="generic_window">
            <property name="text">
-            <string>sort1</string>
+            <string>Generic</string>
            </property>
           </widget>
          </item>
@@ -339,6 +339,9 @@
           <spacer name="horizontalSpacer_2">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Expanding</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
