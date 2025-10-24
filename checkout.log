@@ -83,3 +83,31 @@ LINE 3: ...                        invoice_id, product_name, quantity, ...
 2025-10-15 20:04:39,765 - INFO - Database updated for checkout. Invoice: 619191
 2025-10-15 20:04:39,766 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#619191.pdf
 2025-10-24 20:42:21,302 - INFO - Product added from Generic: \u10d0\u10e5\u10e2\u10dd\u10d5\u10d4\u10d2\u10d8\u10dc\u10d8 \u10db\u10d0\u10da\u10d0\u10db\u10dd 5% 20\u10d2 \u10e2\u10e3\u10d1, Price: 3.8, Qty: 1
+2025-10-24 21:38:25,447 - INFO - Product added from Generic: \u10d0\u10e5\u10e2\u10dd\u10d5\u10d4\u10d2\u10d8\u10dc\u10d8 40\u10db\u10d2/\u10db\u10da 2\u10db\u10da #25\u10d0, Price: 111.0, Qty: 1
+2025-10-24 21:39:31,954 - INFO - Database updated for checkout. Invoice: 214402
+2025-10-24 21:39:31,955 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#214402.pdf
+2025-10-24 21:42:24,611 - INFO - Product added from Generic: \u10d0\u10da\u10d1\u10e3\u10ea\u10d8\u10d3\u10d8  20% 5\u10db\u10da #1\u10e4\u10da, Price: 2.5, Qty: 1
+2025-10-24 21:42:33,687 - INFO - Product added from Generic: \u10d5\u10d8\u10e2 B12 500\u10db\u10d9\u10d2 1\u10db\u10da #10\u10d0(\u10d1\u10d8\u10dd\u10e4), Price: 1.95, Qty: 1
+2025-10-24 21:42:50,112 - INFO - Database updated for checkout. Invoice: 680791
+2025-10-24 21:42:50,112 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#680791.pdf
+2025-10-24 21:46:10,086 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#951827.pdf
+2025-10-24 21:47:05,777 - INFO - Database updated for checkout. Invoice: 377321
+2025-10-24 21:47:05,778 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#377321.pdf
+2025-10-24 21:48:09,227 - INFO - Database updated for checkout. Invoice: 895538
+2025-10-24 21:48:09,228 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#895538.pdf
+2025-10-24 21:49:35,431 - INFO - Database updated for checkout. Invoice: 486374
+2025-10-24 21:49:35,431 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#486374.pdf
+2025-10-24 22:11:56,357 - INFO - Database updated for checkout. Invoice: 457320
+2025-10-24 22:11:56,358 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#457320.pdf
+2025-10-24 22:17:38,289 - INFO - Database updated for checkout. Invoice: 575964
+2025-10-24 22:17:38,289 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#575964.pdf
+2025-10-24 22:21:02,260 - INFO - Database updated for checkout. Invoice: 503180
+2025-10-24 22:21:02,261 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#503180.pdf
+2025-10-24 22:23:26,787 - INFO - Database updated for checkout. Invoice: 897518
+2025-10-24 22:23:26,788 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#897518.pdf
+2025-10-24 22:24:08,136 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#609559.pdf
+2025-10-24 22:27:23,361 - INFO - Database updated for checkout. Invoice: 319275
+2025-10-24 22:27:23,361 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#319275.pdf
+2025-10-24 22:27:59,414 - INFO - Product added from Generic: \u10d0\u10db\u10de\u10d8\u10ea\u10d8\u10da\u10d8\u10dc\u10d8 0.5\u10d2  #10\u10d9\u10d0\u10e4\u10e1 (\u10d8\u10db\u10de), Price: 5.9, Qty: 1
+2025-10-24 22:28:36,750 - INFO - Database updated for checkout. Invoice: 350890
+2025-10-24 22:28:36,750 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#350890.pdf
