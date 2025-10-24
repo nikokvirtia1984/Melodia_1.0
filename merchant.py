@@ -7,6 +7,7 @@ import random
 import psycopg2
 import datetime
 import os
+import pathlib
 from user_system import UserSystem
 from typing import List, Union, Dict, Any
 import logging
@@ -521,10 +522,6 @@ class MerchantTable(QWidget):
                 self.sourceModel.appendRow(row_items)
             self.sourceModel.endInsertRows()
 
-
-
-
-
     def paste_selected_row(self):
         selected_indexes = self.merchant_table.selectionModel().selectedRows()
 
@@ -817,6 +814,10 @@ class MerchantTable(QWidget):
             logging.error(f"Invoice insertion failed for {invoice_number}: {db_insert_e}")
             return  # Exit checkout if essential data cannot be saved
 
+        folder_name = "invoices"
+        target_folder = pathlib.Path(folder_name)
+        target_folder.mkdir(parents=True, exist_ok=True)
+
         # 4. PDF Generation
         filename = f'Invoice({created_date})#{invoice_number}.pdf'
         full_path = os.path.join('invoices', filename)
@@ -897,6 +898,8 @@ class MerchantTable(QWidget):
             # Only show this if PDF creation was attempted but file not found
             if invoice_creation == QMessageBox.StandardButton.Yes:
                 QMessageBox.warning(self, "Print Error", "ქვითრის ფაილი ვერ მოიძებნა ამოსაბეჭდად.")
+
+        self.destinationModel.setRowCount(0)
 
     def delete_product(self):
         selected_indexes = self.basket.selectionModel().selectedRows()
