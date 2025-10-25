@@ -21,6 +21,7 @@ class MainWindow(QMainWindow):
         loadUi('ui/LoginWindow.ui', self)
         self.load_qss('ui/Adaptic.qss')
         self.is_first_run()
+        self.version = self.get_version()
         self.user_system = UserSystem()
         self.main_menu = None
         self.username_input.setFocus()
@@ -43,6 +44,12 @@ class MainWindow(QMainWindow):
         else:
             QMessageBox.information(self, "პროგრამის პირველი გაშვება",
                                     "საჭიროა მონაცემთა ბაზის ინიციალიზაცია!")
+    def get_version(self):
+        with open("settings.json", "r") as file:
+            settings = json.load(file)
+            version = settings["version"]
+
+            return version
 
     def _hash_password(self, password):
         """Hash a password for storage"""
@@ -177,7 +184,7 @@ class MainWindow(QMainWindow):
 
             if success:
                 self.main_menu = MenuWindow(username=username, login_window=self)
-                self.main_menu.setWindowTitle(f"მელოდია - {username} ({position})")
+                self.main_menu.setWindowTitle(f"მელოდია {self.version} - {username} ({position})")
                 # Set permissions based on position
                 if position == "ადმინისტრატორი" or position == "root":
                     self.main_menu.action_users.setEnabled(True)
