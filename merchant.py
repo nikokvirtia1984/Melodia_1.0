@@ -161,16 +161,17 @@ class MerchantTable(QWidget):
         # serial_number = product_data[5]   # Serial Number (optional for display)
 
         # 2. Validation
-        try:
-            if float(stock) <= 0:
-                QMessageBox.warning(self, "Stock Warning", f"პროდუქტი '{product_name_full}' ნაშთში აღარ არის.")
-                return
-            price = float(price_str)
-        except ValueError:
-            QMessageBox.critical(self, "Error", f"არასწორი ფასის მონაცემი: {price_str}")
-            return
+        # try:
+        #     if float(stock) <= 0:
+        #         QMessageBox.warning(self, "Stock Warning", f"პროდუქტი '{product_name_full}' ნაშთში აღარ არის.")
+        #         return
+        #     price = float(price_str)
+        # except ValueError:
+        #     QMessageBox.critical(self, "Error", f"არასწორი ფასის მონაცემი: {price_str}")
+        #     return
 
         # 3. Determine product unit quantity from name (Same logic as paste_selected_row)
+        price = float(price_str)
         product_unit_quantity_parsed_from_name = 0
         pattern = r'#(\d+)(?:ტ|ა|დრ)'
         match = re.search(pattern, product_name_full)
@@ -182,7 +183,7 @@ class MerchantTable(QWidget):
                 product_unit_quantity_parsed_from_name = 0
 
         # 4. Create and add new row to the basket model
-        quantity_in_basket_initial = 1.0  # Default initial quantity is 1
+        quantity_in_basket_initial = 0  # Default initial quantity is 1
         initial_total = quantity_in_basket_initial * price
 
         new_row_items = [
@@ -360,63 +361,6 @@ class MerchantTable(QWidget):
 
         QApplication.instance().setStyleSheet(stylesheet)
 
-    # def load_data(self):
-    #     try:
-    #         with db.connect() as conn:
-    #             with conn.cursor() as cursor:
-    #                 cursor.execute("""
-    #                 SELECT
-    #                     m."NAM_MAT",          -- 0: პროდუქტის სახელი (Product Name)
-    #                     n."PRICE",            -- 1: პროდუქტის ღირებულება (Price)
-    #                     n."COD_MAT",          -- 2: დღ/სპ
-    #                     n."DAT_GOOD",         -- 3: ვარგისია
-    #                     n."NAST",             -- 4: ნაშთი (Stock)
-    #                     n."SER_NUM"           -- 5: სერიული ნომერი
-    #                 FROM
-    #                     public.mater1 AS m
-    #                 JOIN
-    #                     public.nashti AS n ON m."COD_MAT" = n."COD_MAT";
-    #                 """)
-    #                 column_names = [desc[0] for desc in cursor.description]
-    #                 self.display_source_data(cursor.fetchall(), column_names)
-    #     except Exception as e:
-    #         QMessageBox.critical(self, "Error",
-    #                              f"Failed to load data:\n{str(e)}")
-    #
-    # def display_source_data(self, data: List[tuple], column_headers: List[str]):
-    #     self.sourceModel.clear()
-    #     source_georgian_headers = [
-    #         'სახელი',
-    #         'ღირებულება',
-    #         'დღ/სპ',
-    #         'ვარგისია',
-    #         'ნაშთი',
-    #         'სერიული ნომერი'
-    #     ]
-    #     self.sourceModel.setHorizontalHeaderLabels(source_georgian_headers)
-    #
-    #     if data:
-    #         self.sourceModel.beginInsertRows(QModelIndex(), 0, len(data) - 1)
-    #         for row_data in data:
-    #             # 1. Create the list of QStandardItems using a list comprehension
-    #             row_items = [QStandardItem(str(cell_data)) for cell_data in row_data]
-    #
-    #             # 2. Loop through the new list to set tooltips
-    #             for i, item in enumerate(row_items):
-    #                 # We use the original data in `row_data` for a more descriptive tooltip
-    #                 cell_data = row_data[i]
-    #
-    #                 if i == 0:  # Column for Product Name
-    #                     item.setToolTip(f"პროდუქტის დასახელება: {cell_data}")
-    #                 elif i == 5:  # Column for Serial Number
-    #                     item.setToolTip(f"სერიული ნომერი: {cell_data}")
-    #
-    #             self.sourceModel.appendRow(row_items)
-    #         self.sourceModel.endInsertRows()
-    # Assuming MerchantTable class and necessary imports are present...
-
-    # ... (Previous MerchantTable code, including __init__ and db/attmat setup)
-
     def load_data(self):
         try:
             with db.connect() as conn:
@@ -531,27 +475,27 @@ class MerchantTable(QWidget):
         selected_row_index_from_source = selected_indexes[0].row()
 
         product_name_item = self.sourceModel.item(selected_row_index_from_source, 0)
-        price_item = self.sourceModel.item(selected_row_index_from_source, 1)
+        price_item = self.sourceModel.item(selected_row_index_from_source, 2)
         product_dat = self.sourceModel.item(selected_row_index_from_source, 3).text()
 
-        product_nast = self.sourceModel.item(selected_row_index_from_source, 4).text()
+        product_nast = self.sourceModel.item(selected_row_index_from_source, 1).text()
         date_now = datetime.date.today()
         # serial_number_item = self.sourceModel.item(selected_row_index_from_source, 5)
         # serial_number_text = serial_number_item.text() if serial_number_item else "N/A"
-        # try:
-        #     if float(product_nast) == 0.0:
-        #         QMessageBox.information(self,'Out of stock','პროდუქტი არ არის მარაგში.')
-        #         return
-        #     if product_dat.strip().lower() in ['', 'none', 'null']:
-        #         # If the date is missing, we consider it expired or invalid
-        #         QMessageBox.information(self, 'Product expired', 'პროდუქტი ვადაგასულია (ვადა არ არის მითითებული).')
-        #         return
-        #     expiration_date_from_db = datetime.datetime.strptime(product_dat, '%Y-%m-%d').date()
-        #     if expiration_date_from_db < date_now or expiration_date_from_db == 'None':
-        #         QMessageBox.information(self, 'Product expired', 'პროდუქტი ვადაგასულია.')
-        #         return
-        # except ValueError as e:
-        #     QMessageBox.warning(self, 'Error', f'Failed to process product data. Details: {e}')
+        try:
+            if float(product_nast) == 0.0:
+                QMessageBox.information(self,'Out of stock','პროდუქტი არ არის მარაგში.')
+                return
+            if product_dat.strip().lower() in ['', 'none', 'null']:
+                # If the date is missing, we consider it expired or invalid
+                QMessageBox.information(self, 'Product expired', 'პროდუქტი ვადაგასულია (ვადა არ არის მითითებული).')
+                return
+            expiration_date_from_db = datetime.datetime.strptime(product_dat, '%Y-%m-%d').date()
+            if expiration_date_from_db < date_now or expiration_date_from_db == 'None':
+                QMessageBox.information(self, 'Product expired', 'პროდუქტი ვადაგასულია.')
+                return
+        except ValueError as e:
+            QMessageBox.warning(self, 'Error', f'Failed to process product data. Details: {e}')
 
 
 
@@ -609,143 +553,6 @@ class MerchantTable(QWidget):
         self.destinationModel.appendRow(new_row_items)
         self.update_grand_total()
         return sold_items
-
-        # Optional: Print for verification (uses last_added_row_index as discussed)
-        # last_added_row_index = self.destinationModel.rowCount() - 1
-        # if last_added_row_index >= 0:
-        #     qty_item_new = self.destinationModel.item(last_added_row_index, 1)
-        #     unit_qty_item_new = self.destinationModel.item(last_added_row_index, 3)
-        #     if qty_item_new and unit_qty_item_new:
-        #         print(f"Added - Qty: {qty_item_new.text()}, Unit Qty (Editable): {unit_qty_item_new.text()}, Original Parsed Unit Qty: {unit_qty_item_new.data(Qt.ItemDataRole.UserRole + 3)}")
-        # --- End of paste_selected_row changes ---
-
-
-    # def checkout(self):
-    #     sold_items = {}
-    #
-    #     # We will get the total price from the grand total displayed on the UI
-    #     total_price = float(self.total_amount.text())  # Assuming total_amount is a QLineEdit
-    #
-    #     # 1. Loop through all rows to build a clean list of item data
-    #     context_list = []
-    #     for row in range(self.destinationModel.rowCount()):
-    #         product_name = self.destinationModel.item(row, 0).text()
-    #         quantity = self.destinationModel.item(row, 1).text()
-    #         price = self.destinationModel.item(row, 2).text()
-    #         unit_quantity = self.destinationModel.item(row, 3).text()
-    #
-    #         # Build a dictionary for this item and add it to our list
-    #         item_data = {
-    #             'პროდუქტის სახელი': product_name,
-    #             'რაოდენობა': quantity,
-    #             'ერთეულის რაოდენობა': unit_quantity,
-    #             'ფასი': price
-    #         }
-    #         context_list.append(item_data)
-    #     invoice_number = random.randint(100000, 999999)
-    #     created_date = datetime.date.today().strftime('%Y-%m-%d')
-    #     created_time = datetime.datetime.now().strftime('%H:%M:%S')
-    #     # 2. Create a single, comprehensive context dictionary for Jinja2
-    #     invoice_context = {
-    #         'invoice_number': invoice_number,  # Replace with a real invoice number
-    #         'created_date': f'{created_date} / {created_time}',
-    #         'items': context_list,  # This is the list we will loop through in HTML
-    #         'total_price': f"{total_price:.2f}"
-    #     }
-    #     with db.connect() as conn:
-    #         with conn.cursor() as cursor:
-    #             # 1. Insert the main invoice record first
-    #             cursor.execute(
-    #                 """
-    #                 INSERT INTO invoices (invoice_id, username, total_price, created_at)
-    #                 VALUES (%s, %s, %s, %s)
-    #                 """,
-    #                 (invoice_number, self.current_username, total_price, f'{created_date}/{created_time}')
-    #             )
-    #
-    #             # 2. Update stock and insert each product into the 'operations' table
-    #             for item in context_list:
-    #                 product_name = item['პროდუქტის სახელი']
-    #                 quantity_sold = float(item['რაოდენობა'])
-    #                 # Insert a row for each item in the 'operations' table
-    #                 cursor.execute(
-    #                     """
-    #                     INSERT INTO operations (
-    #                         invoice_id, product_name, quantity, item_quantity, product_price, date
-    #                     ) VALUES (%s, %s, %s, %s, %s, %s)
-    #                     """,
-    #                     (invoice_number, item['პროდუქტის სახელი'], quantity_sold, item['ერთეულის რაოდენობა'],
-    #                      float(item['ფასი']), f'{created_date}/{created_time}')
-    #                 )
-    #             conn.commit()
-    #     #
-    #     # 3. Move the PDF generation logic OUTSIDE the loop, and only run it once.
-    #     invoice_creation = QMessageBox.question(self, 'ქვითრის შექმნა', 'შევქმნათ ქვითარი?',
-    #                                                 QMessageBox.StandardButton.Yes, QMessageBox.StandardButton.No)
-    #     if invoice_creation == QMessageBox.StandardButton.Yes:
-    #         try:
-    #             template_loader = jinja2.FileSystemLoader('./')
-    #             template_env = jinja2.Environment(loader=template_loader)
-    #             template = template_env.get_template('invoice.html')
-    #             output_text = template.render(invoice_context)
-    #
-    #             # Ensure wkhtmltopdf is installed and the path is correct
-    #             config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
-    #             filename = f'Invoice({created_date})#{invoice_number}.pdf'
-    #             full_path = os.path.join('invoices', filename)
-    #             pdfkit.from_string(output_text, full_path,
-    #                                configuration=config)
-    #         except Exception as e:
-    #             QMessageBox.warning(self,'Invoice creation Error', 'ქვითრის შექმნა ვერ მოხერხდა', e)
-    #     database_changes = QMessageBox.question(self, 'მონაცემთა ბაზაში ცვლილებების შეტანა',
-    #                                             'შევიტანო ბაზაში ცვლილებები?',
-    #                                             QMessageBox.StandardButton.Yes, QMessageBox.StandardButton.No)
-    #     if database_changes == QMessageBox.StandardButton.Yes:
-    #         # --- START OF CORRECTED CODE FOR DATABASE UPDATE ---
-    #         try:
-    #             with db.connect() as conn:
-    #                 with conn.cursor() as cursor:
-    #                     for item in context_list:
-    #                         product_name = item['პროდუქტის სახელი']
-    #                         quantity_sold = item['რაოდენობა']
-    #
-    #                         # Find the product's COD_MAT (code) from mater1 table
-    #                         cursor.execute(
-    #                             "SELECT \"COD_MAT\" FROM public.mater1 WHERE \"NAM_MAT\" = %s",
-    #                             (product_name,)
-    #                         )
-    #                         cod_mat = cursor.fetchone()
-    #
-    #                         if cod_mat:
-    #                             # Use the COD_MAT to update the quantity in the nashti table
-    #                             cursor.execute(
-    #                                 """
-    #                                 UPDATE public.nashti
-    #                                 SET "NAST" = "NAST" - %s
-    #                                 WHERE "COD_MAT" = %s
-    #                                 """,
-    #                                 (quantity_sold, cod_mat[0])
-    #                             )
-    #                         else:
-    #                             logging.warning(
-    #                                 f"Product '{product_name}' not found in database. Stock not updated.")
-    #
-    #                     conn.commit()
-    #             QMessageBox.information(self, "Success", "მონაცემები წარმატებით განახლდა!")
-    #             logging.info(f"Database updated for checkout. Invoice: {invoice_number}")
-    #         except Exception as db_e:
-    #             QMessageBox.critical(self, "Database Error", f"მონაცემების განახლება ვერ მოხერხდა: {db_e}")
-    #             logging.error(f"Database update failed for invoice {invoice_number}: {db_e}")
-    #         # --- END OF CORRECTED CODE ---
-    #     logging.info(f"Checkout successful. Username: {self.current_username} . Invoice created: {full_path}")
-    #     reply = QMessageBox.question(self, 'ინვოისის ამობეჭდვა', 'ინვოისი წარმატებით შეიქმნა!, გსურთ ამობეჭდვა?',
-    #                                  QMessageBox.StandardButton.Yes, QMessageBox.StandardButton.No)
-    #     # QMessageBox.standardButton(self, "PDF Created", "ინვოისი წარმატებით შეიქმნა!")
-    #     if reply == QMessageBox.StandardButton.Yes:
-    #         os.startfile(full_path)
-    #
-    #         except Exception as e:
-    #             QMessageBox.critical(self, "PDF Error", f"ინვოისის შექმნა ვერ მოხერხდა: {e}")
 
     def checkout(self):
         sold_items = {}

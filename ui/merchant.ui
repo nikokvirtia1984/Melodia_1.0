@@ -311,6 +311,20 @@
           </spacer>
          </item>
          <item>
+          <widget class="QCheckBox" name="quantity">
+           <property name="text">
+            <string>FilterByQuantity</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="date">
+           <property name="text">
+            <string>FilterByDate</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="generic_window">
            <property name="text">
             <string>Generic</string>

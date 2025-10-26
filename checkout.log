@@ -111,3 +111,6 @@ LINE 3: ...                        invoice_id, product_name, quantity, ...
 2025-10-24 22:27:59,414 - INFO - Product added from Generic: \u10d0\u10db\u10de\u10d8\u10ea\u10d8\u10da\u10d8\u10dc\u10d8 0.5\u10d2  #10\u10d9\u10d0\u10e4\u10e1 (\u10d8\u10db\u10de), Price: 5.9, Qty: 1
 2025-10-24 22:28:36,750 - INFO - Database updated for checkout. Invoice: 350890
 2025-10-24 22:28:36,750 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#350890.pdf
+2025-10-25 15:33:33,412 - INFO - Product added from Generic: \u10d7\u10d8\u10db\u10dd\u10da\u10dd\u10da-\u10dd\u10e4\u10d7\u10d0\u10dc\u10d8 0.5% 5\u10db\u10da \u10e4\u10da, Price: 7.65, Qty: 1
+2025-10-26 19:47:13,763 - INFO - Product added from Generic: \u10dc\u10d8\u10e2\u10e0\u10dd\u10e5\u10e1\u10dd\u10da\u10d8\u10dc\u10d8 0.05\u10d2 #50\u10e2, Price: 6.0, Qty: 1
+2025-10-26 19:52:48,962 - INFO - Product added from Generic: 5-\u10dc\u10dd\u10d9\u10d8  0.05\u10d2 #50\u10e2, Price: 11.0, Qty: 1
