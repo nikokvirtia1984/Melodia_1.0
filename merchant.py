@@ -721,6 +721,7 @@ class MerchantTable(QWidget):
                 QMessageBox.warning(self, "Print Error", "ქვითრის ფაილი ვერ მოიძებნა ამოსაბეჭდად.")
 
         self.destinationModel.setRowCount(0)
+        self.total_amount.clear()
 
     def delete_product(self):
         selected_indexes = self.basket.selectionModel().selectedRows()
