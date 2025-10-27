@@ -56,14 +56,14 @@ class MerchantTable(QWidget):
             'სახელი',  # Column 0: Display only
             'რაოდ.',  # Column 1: Editable (customer_qty)
             'ფასი',  # Column 2: Editable (product_unit_price)
-            'ერთ. რაოდ.',  # Column 3: Editable (sold_internal_units)
+            'ერთეული',  # Column 3: Editable (sold_internal_units)
             'სულ'  # Column 4: Calculated, not directly editable by user
         ])
         self.basket.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
-        self.basket.horizontalHeader().resizeSection(0, 212)
+        self.basket.horizontalHeader().resizeSection(0, 130)
         self.basket.horizontalHeader().resizeSection(1, 70)
         self.basket.horizontalHeader().resizeSection(2, 55)
-        self.basket.horizontalHeader().resizeSection(3, 110)
+        self.basket.horizontalHeader().resizeSection(3, 80)
         self.basket.horizontalHeader().resizeSection(4, 60)
 
         # --- End of destination header setup ---
@@ -450,12 +450,12 @@ class MerchantTable(QWidget):
         ]
         self.sourceModel.setHorizontalHeaderLabels(source_georgian_headers)
         self.merchant_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
-        self.merchant_table.horizontalHeader().resizeSection(0, 430)
+        self.merchant_table.horizontalHeader().resizeSection(0, 250)
         self.merchant_table.horizontalHeader().resizeSection(1, 120)
         self.merchant_table.horizontalHeader().resizeSection(2, 140)
-        self.merchant_table.horizontalHeader().resizeSection(3, 120)
-        self.merchant_table.horizontalHeader().resizeSection(4, 250)
-        self.merchant_table.horizontalHeader().resizeSection(5, 200)
+        self.merchant_table.horizontalHeader().resizeSection(3, 100)
+        self.merchant_table.horizontalHeader().resizeSection(4, 220)
+        self.merchant_table.horizontalHeader().resizeSection(5, 150)
 
         if data:
             self.sourceModel.beginInsertRows(QModelIndex(), 0, len(data) - 1)
