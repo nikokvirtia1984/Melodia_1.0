@@ -37,11 +37,11 @@ class MerchantTable(QWidget):
         self.username = UserSystem()
         self.merchant_table.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
         self.merchant_table.setSelectionMode(QTableView.SelectionMode.SingleSelection)
-        self.merchant_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.merchant_table.resizeColumnsToContents()  # Often conflicts with Stretch, keep if specific columns are too wide/narrow
+        # self.merchant_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        # self.merchant_table.resizeColumnsToContents()  # Often conflicts with Stretch, keep if specific columns are too wide/narrow
         # self.merchant_table.horizontalHeader().setStretchLastSection(True) # Only if you want last section to take all remaining space
         self.current_username = current_username
-        self.basket.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        # self.basket.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         # Ensure the basket table cells are editable by double-click
         # Default is usually QAbstractItemView.DoubleClicked or EditKeyPressed
         # If your cells are not editable, you might explicitly set:
@@ -54,11 +54,18 @@ class MerchantTable(QWidget):
         # --- Set the desired headers for the DESTINATION table (basket) ---
         self.destinationModel.setHorizontalHeaderLabels([
             'სახელი',  # Column 0: Display only
-            'რაოდენობა',  # Column 1: Editable (customer_qty)
-            'ღირებულება',  # Column 2: Editable (product_unit_price)
-            'ერთეულის რაოდენობა',  # Column 3: Editable (sold_internal_units)
+            'რაოდ.',  # Column 1: Editable (customer_qty)
+            'ფასი',  # Column 2: Editable (product_unit_price)
+            'ერთ. რაოდ.',  # Column 3: Editable (sold_internal_units)
             'სულ'  # Column 4: Calculated, not directly editable by user
         ])
+        self.basket.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
+        self.basket.horizontalHeader().resizeSection(0, 212)
+        self.basket.horizontalHeader().resizeSection(1, 70)
+        self.basket.horizontalHeader().resizeSection(2, 55)
+        self.basket.horizontalHeader().resizeSection(3, 110)
+        self.basket.horizontalHeader().resizeSection(4, 60)
+
         # --- End of destination header setup ---
 
         # Connect the dataChanged signal of the destinationModel
@@ -74,7 +81,7 @@ class MerchantTable(QWidget):
         # --- End of logger configuration ---
         self.load_qss('ui/Adaptic.qss')
         self.load_data()
-        self.basket.resizeColumnsToContents()
+        # self.basket.resizeColumnsToContents()
         self.checkout_button.clicked.connect(self.checkout)
         self.delete_button.clicked.connect(self.delete_product)
         self.basket.installEventFilter(self)
@@ -442,6 +449,13 @@ class MerchantTable(QWidget):
             'სერიული ნომერი'
         ]
         self.sourceModel.setHorizontalHeaderLabels(source_georgian_headers)
+        self.merchant_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
+        self.merchant_table.horizontalHeader().resizeSection(0, 430)
+        self.merchant_table.horizontalHeader().resizeSection(1, 120)
+        self.merchant_table.horizontalHeader().resizeSection(2, 140)
+        self.merchant_table.horizontalHeader().resizeSection(3, 120)
+        self.merchant_table.horizontalHeader().resizeSection(4, 250)
+        self.merchant_table.horizontalHeader().resizeSection(5, 200)
 
         if data:
             self.sourceModel.beginInsertRows(QModelIndex(), 0, len(data) - 1)
