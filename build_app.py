@@ -18,7 +18,14 @@ dist_dir = 'dist/Melodia'
 files_to_copy = [
     'settings.json',
     'checkout.log',
-    'invoice.html'
+    'invoice.html',
+    'attmat.json',
+    'matform.csv',
+    'matform_content.csv',
+    'matstor.csv',
+    'matstor_content.csv',
+    'saxeebi.csv',
+    'saxeebi_content.csv'
 ]
 
 folders_to_copy = [

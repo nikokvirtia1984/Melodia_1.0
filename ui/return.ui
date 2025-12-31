@@ -97,6 +97,13 @@
         </spacer>
        </item>
        <item>
+        <widget class="QCheckBox" name="sold_checkbox">
+         <property name="text">
+          <string>Show Unsold</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="print_button">
          <property name="font">
           <font>

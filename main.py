@@ -109,8 +109,17 @@ class MainWindow(QMainWindow):
                             product_name VARCHAR(255),
                             quantity NUMERIC(10, 2),
                             item_quantity VARCHAR(255),
-                            product_price NUMERIC(10, 2),
-                            date TIMESTAMP WITH TIME ZONE
+                            price NUMERIC(10, 2),
+                            date TIMESTAMP WITH TIME ZONE,
+                            brut_price numeric(10, 0),
+                            net_price numeric(10, 0),
+                            tax numeric(10, 0),
+                            sh_price numeric(10, 0),
+                            zac_price numeric(10, 0),
+                            danamati_sul numeric(10, 0),
+                            danamati_percent numeric(10, 0),
+                            tax_payed numeric(10, 0),
+                            tax_not_payed numeric(10, 0)
                             );
                         ''')
                     cursor.execute('''

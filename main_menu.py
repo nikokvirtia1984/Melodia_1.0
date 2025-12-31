@@ -1,3 +1,4 @@
+
 import bcrypt
 import psycopg2
 from PyQt6.QtCore import Qt

@@ -1,136 +1,44 @@
-2025-08-26 21:36:57,411 - INFO - Checkout successful. Invoice created: invoices\Invoice(2025-08-26)#6972.pdf
-2025-08-26 22:00:55,623 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-26)#7599.pdf
-2025-08-27 15:54:29,975 - ERROR - Database update failed for invoice 8333: relation "products" does not exist
-LINE 1: UPDATE products SET quantity = quantity - '5' WHERE name = '...
-               ^
-
-2025-08-27 15:54:29,976 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-27)#8333.pdf
-2025-08-27 15:55:22,848 - INFO - Database updated for checkout. Invoice: 7592
-2025-08-27 15:55:22,849 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-27)#7592.pdf
-2025-08-27 15:56:21,589 - INFO - Database updated for checkout. Invoice: 9007
-2025-08-27 15:56:21,590 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-27)#9007.pdf
-2025-08-28 11:43:50,902 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-28)#2570.pdf
-2025-08-29 10:05:01,441 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#3886.pdf
-2025-08-29 10:05:23,908 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#6350.pdf
-2025-08-29 10:19:48,061 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#6290.pdf
-2025-08-29 10:21:04,800 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#6477.pdf
-2025-08-29 10:22:29,505 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#3215.pdf
-2025-08-29 10:23:20,606 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#9289.pdf
-2025-08-29 10:24:23,428 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#8214.pdf
-2025-08-29 10:25:16,406 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#5178.pdf
-2025-08-29 10:26:03,259 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-29)#3291.pdf
-2025-08-31 12:34:18,502 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-31)#9999.pdf
-2025-08-31 12:37:08,825 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-31)#896147.pdf
-2025-08-31 13:16:10,758 - INFO - Checkout successful | User: niko | Invoice: 1433 | Total: 142.19 | File: invoices\invoice_2025-08-31_13-16-01_1433.pdf
-2025-08-31 13:17:32,054 - ERROR - Database update failed for invoice 5281: column "quantity" of relation "operations" does not exist
-LINE 3: ...                        invoice_id, product_name, quantity, ...
-                                                             ^
-
-2025-08-31 13:17:32,055 - INFO - Checkout successful | User: niko | Invoice: 5281 | Total: 139.09 | File: invoices\invoice_2025-08-31_13-17-19_5281.pdf
-2025-08-31 14:15:15,062 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-31)#436265.pdf
-2025-08-31 21:38:45,928 - INFO - Database updated for checkout. Invoice: 580853
-2025-08-31 21:38:45,937 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-31)#580853.pdf
-2025-08-31 21:43:27,243 - INFO - Database updated for checkout. Invoice: 783776
-2025-08-31 21:43:27,243 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-31)#783776.pdf
-2025-08-31 21:46:24,627 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-08-31)#662844.pdf
-2025-09-02 22:45:46,400 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-02)#678961.pdf
-2025-09-03 12:04:44,598 - INFO - Database updated for checkout. Invoice: 827653
-2025-09-03 12:04:44,607 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-03)#827653.pdf
-2025-09-03 14:15:21,726 - INFO - Database updated for checkout. Invoice: 457668
-2025-09-03 14:15:21,736 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-03)#457668.pdf
-2025-09-03 14:18:26,554 - INFO - Database updated for checkout. Invoice: 526224
-2025-09-03 14:18:26,554 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-03)#526224.pdf
-2025-09-08 21:55:45,606 - INFO - Database updated for checkout. Invoice: 534098
-2025-09-08 21:55:45,607 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-08)#534098.pdf
-2025-09-08 21:57:26,975 - INFO - Database updated for checkout. Invoice: 427475
-2025-09-08 21:57:26,976 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-08)#427475.pdf
-2025-09-08 22:00:19,547 - INFO - Database updated for checkout. Invoice: 465360
-2025-09-08 22:00:19,548 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-09-08)#465360.pdf
-2025-09-08 22:02:54,456 - INFO - Database updated for checkout. Invoice: 270669
-2025-09-08 22:02:54,457 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-09-08)#270669.pdf
-2025-09-08 22:06:09,524 - INFO - Database updated for checkout. Invoice: 858613
-2025-09-08 22:06:09,524 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-09-08)#858613.pdf
-2025-09-09 00:50:49,185 - INFO - Database updated for checkout. Invoice: 846697
-2025-09-09 00:50:49,185 - INFO - Checkout successful. Username: root . Invoice created: invoices\Invoice(2025-09-09)#846697.pdf
-2025-09-09 01:02:51,876 - INFO - Checkout successful. Username: root . Invoice created: invoices\Invoice(2025-09-09)#541247.pdf
-2025-09-09 01:03:00,124 - INFO - Database updated for checkout. Invoice: 698412
-2025-09-09 01:03:00,124 - INFO - Checkout successful. Username: root . Invoice created: invoices\Invoice(2025-09-09)#698412.pdf
-2025-09-11 23:24:04,143 - INFO - Database updated for checkout. Invoice: 560999
-2025-09-11 23:24:04,152 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-09-11)#560999.pdf
-2025-09-12 22:39:48,509 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-09-12)#242391.pdf
-2025-09-12 22:43:45,796 - INFO - Database updated for checkout. Invoice: 378879
-2025-09-12 22:43:45,797 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-09-12)#378879.pdf
-2025-09-12 22:55:59,567 - INFO - Database updated for checkout. Invoice: 309694
-2025-09-12 22:55:59,568 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-09-12)#309694.pdf
-2025-09-12 23:03:01,268 - INFO - Database updated for checkout. Invoice: 172976
-2025-09-12 23:03:01,269 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-09-12)#172976.pdf
-2025-10-14 11:55:43,828 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-14)#870725.pdf
-2025-10-14 12:15:53,453 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-14)#264637.pdf
-2025-10-14 12:17:01,483 - INFO - Database updated for checkout. Invoice: 400322
-2025-10-14 12:17:01,483 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-14)#400322.pdf
-2025-10-15 19:15:15,179 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#897772.pdf
-2025-10-15 19:15:29,179 - INFO - Database updated for checkout. Invoice: 102361
-2025-10-15 19:15:29,179 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#102361.pdf
-2025-10-15 19:15:56,385 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#836166.pdf
-2025-10-15 19:16:54,965 - INFO - Database updated for checkout. Invoice: 597468
-2025-10-15 19:16:54,965 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#597468.pdf
-2025-10-15 19:33:10,692 - INFO - Database updated for checkout. Invoice: 939508
-2025-10-15 19:33:10,693 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#939508.pdf
-2025-10-15 19:33:57,615 - INFO - Database updated for checkout. Invoice: 245587
-2025-10-15 19:33:57,615 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#245587.pdf
-2025-10-15 19:42:10,079 - INFO - Database updated for checkout. Invoice: 155786
-2025-10-15 19:42:10,081 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#155786.pdf
-2025-10-15 20:04:39,765 - INFO - Database updated for checkout. Invoice: 619191
-2025-10-15 20:04:39,766 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-10-15)#619191.pdf
-2025-10-24 20:42:21,302 - INFO - Product added from Generic: \u10d0\u10e5\u10e2\u10dd\u10d5\u10d4\u10d2\u10d8\u10dc\u10d8 \u10db\u10d0\u10da\u10d0\u10db\u10dd 5% 20\u10d2 \u10e2\u10e3\u10d1, Price: 3.8, Qty: 1
-2025-10-24 21:38:25,447 - INFO - Product added from Generic: \u10d0\u10e5\u10e2\u10dd\u10d5\u10d4\u10d2\u10d8\u10dc\u10d8 40\u10db\u10d2/\u10db\u10da 2\u10db\u10da #25\u10d0, Price: 111.0, Qty: 1
-2025-10-24 21:39:31,954 - INFO - Database updated for checkout. Invoice: 214402
-2025-10-24 21:39:31,955 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#214402.pdf
-2025-10-24 21:42:24,611 - INFO - Product added from Generic: \u10d0\u10da\u10d1\u10e3\u10ea\u10d8\u10d3\u10d8  20% 5\u10db\u10da #1\u10e4\u10da, Price: 2.5, Qty: 1
-2025-10-24 21:42:33,687 - INFO - Product added from Generic: \u10d5\u10d8\u10e2 B12 500\u10db\u10d9\u10d2 1\u10db\u10da #10\u10d0(\u10d1\u10d8\u10dd\u10e4), Price: 1.95, Qty: 1
-2025-10-24 21:42:50,112 - INFO - Database updated for checkout. Invoice: 680791
-2025-10-24 21:42:50,112 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#680791.pdf
-2025-10-24 21:46:10,086 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#951827.pdf
-2025-10-24 21:47:05,777 - INFO - Database updated for checkout. Invoice: 377321
-2025-10-24 21:47:05,778 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#377321.pdf
-2025-10-24 21:48:09,227 - INFO - Database updated for checkout. Invoice: 895538
-2025-10-24 21:48:09,228 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#895538.pdf
-2025-10-24 21:49:35,431 - INFO - Database updated for checkout. Invoice: 486374
-2025-10-24 21:49:35,431 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#486374.pdf
-2025-10-24 22:11:56,357 - INFO - Database updated for checkout. Invoice: 457320
-2025-10-24 22:11:56,358 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#457320.pdf
-2025-10-24 22:17:38,289 - INFO - Database updated for checkout. Invoice: 575964
-2025-10-24 22:17:38,289 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#575964.pdf
-2025-10-24 22:21:02,260 - INFO - Database updated for checkout. Invoice: 503180
-2025-10-24 22:21:02,261 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#503180.pdf
-2025-10-24 22:23:26,787 - INFO - Database updated for checkout. Invoice: 897518
-2025-10-24 22:23:26,788 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#897518.pdf
-2025-10-24 22:24:08,136 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#609559.pdf
-2025-10-24 22:27:23,361 - INFO - Database updated for checkout. Invoice: 319275
-2025-10-24 22:27:23,361 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#319275.pdf
-2025-10-24 22:27:59,414 - INFO - Product added from Generic: \u10d0\u10db\u10de\u10d8\u10ea\u10d8\u10da\u10d8\u10dc\u10d8 0.5\u10d2  #10\u10d9\u10d0\u10e4\u10e1 (\u10d8\u10db\u10de), Price: 5.9, Qty: 1
-2025-10-24 22:28:36,750 - INFO - Database updated for checkout. Invoice: 350890
-2025-10-24 22:28:36,750 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-24)#350890.pdf
-2025-10-25 15:33:33,412 - INFO - Product added from Generic: \u10d7\u10d8\u10db\u10dd\u10da\u10dd\u10da-\u10dd\u10e4\u10d7\u10d0\u10dc\u10d8 0.5% 5\u10db\u10da \u10e4\u10da, Price: 7.65, Qty: 1
-2025-10-26 19:47:13,763 - INFO - Product added from Generic: \u10dc\u10d8\u10e2\u10e0\u10dd\u10e5\u10e1\u10dd\u10da\u10d8\u10dc\u10d8 0.05\u10d2 #50\u10e2, Price: 6.0, Qty: 1
-2025-10-26 19:52:48,962 - INFO - Product added from Generic: 5-\u10dc\u10dd\u10d9\u10d8  0.05\u10d2 #50\u10e2, Price: 11.0, Qty: 1
-2025-10-27 21:20:30,043 - INFO - Product added from Generic: \u10d0\u10da\u10d1\u10e3\u10ea\u10d8\u10d3\u10d8  20% 5\u10db\u10da #1\u10e4\u10da, Price: 2.5, Qty: 1
-2025-10-27 21:22:50,370 - INFO - Product added from Generic: \u10e1\u10dd\u10da\u10d9\u10dd\u10e1\u10d4\u10e0\u10d8\u10da\u10d8 \u10db\u10d0\u10da\u10d0\u10db\u10dd 5% 20\u10d2, Price: 11.4, Qty: 1
-2025-10-27 21:23:38,005 - INFO - Product added from Generic: \u10d0\u10da\u10d1\u10e3\u10ea\u10d8\u10d3\u10d8  20% 5\u10db\u10da #1\u10e4\u10da, Price: 2.5, Qty: 1
-2025-10-27 21:24:20,909 - INFO - Product added from Generic: \u10d0\u10da\u10dd\u10ee\u10dd\u10da\u10d8  #50\u10e2 (\u10d9\u10d8\u10d4\u10d5\u10d8), Price: 3.1, Qty: 1
-2025-10-27 21:25:09,268 - INFO - Product added from Generic: \u10d0\u10da\u10db\u10d0\u10d2\u10d4\u10da\u10d8-A  170\u10db\u10da \u10e4\u10da, Price: 13.2, Qty: 1
-2025-10-27 21:26:47,705 - INFO - Product added from Generic: \u10d0\u10da\u10dd\u10d4\u10e1 \u10d4\u10e5\u10e1\u10e2\u10e0\u10d0\u10e5\u10e2\u10d8 1\u10db\u10da  #10\u10d0(\u10d7\u10d1\u10e5\u10d8, Price: 1.75, Qty: 1
-2025-10-27 21:27:21,977 - INFO - Product added from Generic: \u10d0\u10da\u10db\u10d0\u10d2\u10d4\u10da\u10d8-A  170\u10db\u10da \u10e4\u10da, Price: 13.2, Qty: 1
-2025-10-27 21:28:05,477 - INFO - Product added from Generic: \u10d0\u10da\u10db\u10d0\u10d2\u10d4\u10da\u10d8-A  170\u10db\u10da \u10e4\u10da, Price: 13.2, Qty: 1
-2025-10-27 21:28:48,748 - INFO - Product added from Generic: \u10d0\u10da\u10d1\u10e3\u10ea\u10d8\u10d3\u10d8-\u10da\u10d8\u10e5\u10d5\u10dd 20% 5\u10db\u10da #1\u10e4\u10da, Price: 2.65, Qty: 1
-2025-10-27 21:29:16,963 - INFO - Product added from Generic: \u10d0\u10da\u10db\u10d0\u10d2\u10d4\u10da\u10d8-A  170\u10db\u10da \u10e4\u10da, Price: 13.2, Qty: 1
-2025-10-27 21:29:44,626 - INFO - Product added from Generic: \u10d0\u10da\u10db\u10d0\u10d2\u10d4\u10da\u10d8-A  170\u10db\u10da \u10e4\u10da, Price: 13.2, Qty: 1
-2025-10-27 21:30:12,696 - INFO - Product added from Generic: \u10d0\u10da\u10dd\u10ee\u10dd\u10da\u10d8  #10\u10e2, Price: 0.75, Qty: 1
-2025-10-27 21:30:51,147 - INFO - Product added from Generic: \u10d0\u10da\u10dd\u10ee\u10dd\u10da\u10d8  #10\u10e2, Price: 0.75, Qty: 1
-2025-10-27 21:33:17,483 - INFO - Product added from Generic: \u10d0\u10da\u10d1\u10e3\u10ea\u10d8\u10d3\u10d8  20% 5\u10db\u10da #1\u10e4\u10da, Price: 2.5, Qty: 1
-2025-10-27 21:33:32,717 - INFO - Database updated for checkout. Invoice: 754730
-2025-10-27 21:33:32,717 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-27)#754730.pdf
-2025-10-27 21:35:19,455 - INFO - Product added from Generic: \u10d0\u10e5\u10e2\u10dd\u10d5\u10d4\u10d2\u10d8\u10dc\u10d8 \u10df\u10d4\u10da\u10d4 20% 20\u10d2 \u10e2\u10e3\u10d1, Price: 5.45, Qty: 1
-2025-10-27 21:35:31,652 - INFO - Database updated for checkout. Invoice: 811912
-2025-10-27 21:35:31,652 - INFO - Checkout successful. Username: beka . Invoice created: invoices\Invoice(2025-10-27)#811912.pdf
-2025-10-27 21:35:41,741 - INFO - Product added from Generic: \u10db\u10d0\u10d0\u10da\u10dd\u10e5\u10e1\u10d8 \u10db\u10d8\u10dc\u10d8 #20\u10e2, Price: 3.4, Qty: 1
+2025-11-10 00:06:56,461 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-11-10)#307317.pdf
+2025-11-10 00:15:23,594 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-11-10)#879960.pdf
+2025-11-17 15:44:44,182 - INFO - Database updated for checkout. Invoice: 999152
+2025-11-17 15:44:45,286 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-11-17)#999152.pdf
+2025-11-21 23:47:43,007 - INFO - Database updated for checkout. Invoice: 484475
+2025-11-21 23:47:43,009 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-11-21)#484475.pdf
+2025-11-30 20:23:13,922 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-11-30)#632746.pdf
+2025-11-30 20:26:12,292 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-11-30)#307003.pdf
+2025-12-07 21:23:30,871 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-07)#898304.pdf
+2025-12-07 21:26:59,368 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-07)#703600.pdf
+2025-12-10 20:43:44,924 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-10)#100057.pdf
+2025-12-10 20:55:22,680 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-10)#181275.pdf
+2025-12-16 22:51:36,381 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-16)#958438.pdf
+2025-12-17 12:30:24,347 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#513549.pdf
+2025-12-17 13:12:38,749 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#620466.pdf
+2025-12-17 13:14:18,478 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#424810.pdf
+2025-12-17 13:15:06,451 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#956118.pdf
+2025-12-17 15:35:17,820 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#159333.pdf
+2025-12-17 16:00:25,484 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#364152.pdf
+2025-12-17 16:13:14,559 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#965515.pdf
+2025-12-17 16:21:47,523 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#559038.pdf
+2025-12-17 16:27:57,330 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#182621.pdf
+2025-12-17 16:44:19,964 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#534008.pdf
+2025-12-17 16:59:33,598 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#523947.pdf
+2025-12-17 17:01:27,525 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#128641.pdf
+2025-12-17 17:05:18,613 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#379108.pdf
+2025-12-17 17:09:46,534 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#427949.pdf
+2025-12-17 17:23:45,977 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#303000.pdf
+2025-12-17 17:27:04,805 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#314533.pdf
+2025-12-17 17:56:47,276 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#340827.pdf
+2025-12-17 18:04:09,571 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#468074.pdf
+2025-12-17 18:09:02,883 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#204454.pdf
+2025-12-17 18:11:07,305 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#234281.pdf
+2025-12-17 18:18:15,511 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#178222.pdf
+2025-12-17 18:36:57,548 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#606894.pdf
+2025-12-17 18:41:33,471 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#709899.pdf
+2025-12-17 18:44:50,571 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#241633.pdf
+2025-12-17 19:01:29,676 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#922802.pdf
+2025-12-17 19:05:52,734 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#903789.pdf
+2025-12-17 19:08:22,802 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#159974.pdf
+2025-12-17 19:09:55,449 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#545998.pdf
+2025-12-17 19:10:58,201 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#443206.pdf
+2025-12-23 22:24:56,585 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-23)#232141.pdf
+2025-12-28 16:48:21,362 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-28)#507665.pdf
