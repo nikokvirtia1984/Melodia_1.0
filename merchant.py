@@ -120,27 +120,46 @@ class MerchantTable(QWidget):
         # 1. Get the data from the sourceModel (Merchant Table)
         # Price is at Index 2, Tax Info is at Index 4
         try:
+
             price_text = self.sourceModel.item(row_idx, 2).text()
-            base_price = float(price_text)
+            bruto_price = float(price_text)
+
         except (ValueError, AttributeError):
-            base_price = 0.0
-
+            bruto_price = 0.0
+        item_nast = self.sourceModel.item(row_idx, 1).text()
         att_mat_info = self.sourceModel.item(row_idx, 4).text()
-
         # 2. Tax Calculation Logic
         is_taxable = "დღგ: იბეგრება" in att_mat_info
 
+        # if is_taxable:
+        #     # Calculate 18% tax from the selling price
+        #     # If price is 0.27, tax is roughly 0.04
+        #     tax_amount = base_price - (base_price / 1.18)
+        #     self.tax1.setText(f" ნაშთი: {item_nast} | დღგ: იბეგრება | თანხა: {tax_amount:.3f}")
+        #
+        #     # Optional: Change style to show it's taxable (e.g., Red text)
+        #     self.tax1.setStyleSheet("color: red; font-weight: bold;")
+        # else:
+        #     self.tax1.setText(f" ნაშთი: {item_nast} | დღგ: არ იბეგრება | თანხა: 0.000")
+        #     self.tax1.setStyleSheet("color: green;")
         if is_taxable:
-            # Calculate 18% tax from the selling price
-            # If price is 0.27, tax is roughly 0.04
-            tax_amount = base_price - (base_price / 1.18)
-            self.tax1.setText(f"დღგ: იბეგრება | თანხა: {tax_amount:.3f}")
+            # Calculate the breakdown
+            net_price = bruto_price / 1.18
+            tax_amount = bruto_price - net_price
 
-            # Optional: Change style to show it's taxable (e.g., Red text)
-            self.tax1.setStyleSheet("color: red; font-weight: bold;")
+            # Display: Net + Tax = Brutto
+            # Example: 0.229 + 0.041 = 0.270 GEL
+            display_text = (
+                f"ნაშთი: {item_nast} | "
+                f"{net_price:.3f} (ფასი) + {tax_amount:.3f} (დღგ) = {bruto_price:.2f} GEL"
+            )
+            self.tax1.setText(display_text)
+            self.tax1.setStyleSheet("color: red; font-weight: bold; border: 1px solid red; background-color: #fff5f5;")
         else:
-            self.tax1.setText("დღგ: არ იბეგრება | თანხა: 0.000")
-            self.tax1.setStyleSheet("color: green;")
+            # If not taxable, Net is the same as Brutto
+            self.tax1.setText(f"ნაშთი: {item_nast} | ფასი: {bruto_price:.2f} GEL (დღგ-ს გარეშე)")
+            self.tax1.setStyleSheet(
+                "color: green; font-weight: bold; border: 1px solid green; background-color: #f5fff5;")
 
     def update_grand_total(self):
         total = 0.0
@@ -237,7 +256,9 @@ class MerchantTable(QWidget):
                         n."DAT_GOOD",         -- 3
                         m."ATT_MAT",          -- 4
                         n."SER_NUM",          -- 5
-                        n."ZAK_PRI"           -- 6
+                        n."ZAK_PRI",          -- 6
+                        m."COD_MAT",          -- 7
+                        n."COD_MAT"           -- 8
                     FROM
                         public.mater1 AS m
                     JOIN
@@ -259,7 +280,8 @@ class MerchantTable(QWidget):
 
                         new_row = [
                             row_data[0], row_data[1], row_data[2], row_data[3],
-                            translated_field, row_data[5], row_data[6]
+                            translated_field, row_data[5], row_data[6], row_data[7],
+                            row_data[8]
                         ]
                         processed_data.append(tuple(new_row))
 
@@ -272,7 +294,7 @@ class MerchantTable(QWidget):
     def display_source_data(self, data: List[tuple], column_headers: List[str]):
         self.sourceModel.clear()
         source_georgian_headers = [
-            'სახელი', 'ნაშთი', 'ფასი', 'ვადა', 'დღ/სპ', 'სერიული ნომერი', 'ფასი(შიდა)'
+            'სახელი', 'ნაშთი', 'ფასი', 'ვადა', 'დღ/სპ', 'სერიული ნომერი', 'ფასი(შიდა)', 'cod_mat(mater)', 'cod_mat(nast)'
         ]
         self.sourceModel.setHorizontalHeaderLabels(source_georgian_headers)
 
@@ -284,6 +306,8 @@ class MerchantTable(QWidget):
         self.merchant_table.horizontalHeader().resizeSection(4, 220)
         self.merchant_table.horizontalHeader().resizeSection(5, 150)
         self.merchant_table.horizontalHeader().resizeSection(6, 110)
+        self.merchant_table.horizontalHeader().resizeSection(7, 110)
+        self.merchant_table.horizontalHeader().resizeSection(8, 110)
 
         today = datetime.date.today()
 

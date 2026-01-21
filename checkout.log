@@ -42,3 +42,5 @@
 2025-12-17 19:10:58,201 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-17)#443206.pdf
 2025-12-23 22:24:56,585 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-23)#232141.pdf
 2025-12-28 16:48:21,362 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-28)#507665.pdf
+2025-12-31 10:18:48,258 - INFO - Product added: \u10de\u10d0\u10dc\u10d0\u10dc\u10d2\u10d8\u10dc\u10d8 \u10e4\u10dd\u10e0\u10e2\u10d4#60\u10e2
+2025-12-31 10:19:04,243 - INFO - Product added: \u10d0\u10e1\u10de\u10d0\u10e0\u10d9\u10d0\u10db\u10d8 0.35\u10db\u10d2 #50\u10e2 (\u10e3\u10d9\u10e0)
