@@ -119,13 +119,14 @@ class MainWindow(QMainWindow):
                             danamati_sul numeric(10, 0),
                             danamati_percent numeric(10, 0),
                             tax_payed numeric(10, 0),
-                            tax_not_payed numeric(10, 0)
+                            tax_not_payed numeric(10, 0),
+                            sold boolean
                             );
                         ''')
                     cursor.execute('''
                         INSERT INTO users 
                         (username, password, email, phone, position) 
-                        VALUES (%s, %s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING
                         ''',
                         ("root", hashed_pw.decode(), "email", "phone", "root"))
 
