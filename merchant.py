@@ -749,10 +749,10 @@ class MerchantTable(QWidget):
             # tax_payed = float(tax_unit * customer_qty)
             # tx_not_payed = 0.0
             #
-            # context_list.append({
-            #     'პროდუქტის სახელი': product_name, 'რაოდენობა': str(customer_qty),
-            #     'ერთეულის რაოდენობა': str(unit_quantity), 'ფასი': f"{final_price_unit:.2f}"
-            # })
+            context_list.append({
+                'პროდუქტის სახელი': product_name, 'რაოდენობა': str(customer_qty),
+                'ერთეულის რაოდენობა': str(unit_quantity), 'ფასი': f"{final_price_unit:.2f}"
+            })
             #
             # operations_data_list.append({
             #     'product_name': product_name, 'customer_qty': customer_qty,
