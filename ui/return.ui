@@ -72,6 +72,25 @@
      <item row="2" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
+        <widget class="QPushButton" name="return_all_button">
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Return all items</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="sold_checkbox">
+         <property name="text">
+          <string>Show Unsold</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="return_button">
          <property name="font">
           <font>
@@ -79,27 +98,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Return</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>10</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="sold_checkbox">
-         <property name="text">
-          <string>Show Unsold</string>
+          <string>Return single item</string>
          </property>
         </widget>
        </item>

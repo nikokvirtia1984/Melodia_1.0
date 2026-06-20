@@ -3,3 +3,8 @@ __pycache__/
 dist/
 build/
 env/
+settings.json
+*.pyc
+.venv/
+invoices/
+checkout.log

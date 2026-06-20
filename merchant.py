@@ -20,6 +20,7 @@ from att_mat import MaterialAttributeTranslator
 from return_function import ReturnProduct
 from info_dialog import InfoDialog
 from generic import CodeGeneric
+from paths import SETTINGS_FILE, INVOICES_DIR, BASE_DIR, ui as ui_path
 
 # --- GLOBAL DEFINITIONS ---
 db = Database()
@@ -33,7 +34,7 @@ VAT_RATE = 0.18  # Define the VAT rate (18%)
 class MerchantTable(QWidget):
     def __init__(self, parent=None, current_username=''):
         super().__init__(parent)
-        loadUi('ui/merchant.ui', self)
+        loadUi(ui_path('merchant.ui'), self)
 
         # Models and Tables Setup
         self.sourceModel = QStandardItemModel()
@@ -84,7 +85,7 @@ class MerchantTable(QWidget):
         )
 
         # QSS/Styling
-        self.load_qss('ui/Adaptic.qss')
+        self.load_qss(ui_path('Adaptic.qss'))
 
         # Filter Checkboxes Setup
         self.quantity.blockSignals(True)
@@ -445,6 +446,12 @@ class MerchantTable(QWidget):
             return
 
         product_name_full = product_name_item.text() if product_name_item else ""
+        # --- ADD THIS CHECK: Is it already in the basket? ---
+        for row in range(self.destinationModel.rowCount()):
+            existing_product = self.destinationModel.item(row, 0).text()
+            if existing_product == product_name_full:
+                QMessageBox.information(self, 'ინფორმაცია', f"'{product_name_full}' უკვე დამატებულია კალათაში.")
+                return  # Stop here, don't add it again!
         price_str = price_item.text() if price_item else "0.0"
         att_mat_info_item = self.sourceModel.item(selected_row_index_from_source, 4)
         att_mat_info = att_mat_info_item.text() if att_mat_info_item else ""
@@ -484,7 +491,7 @@ class MerchantTable(QWidget):
             QStandardItem('0'),
             QStandardItem(f"{initial_total:.2f}")
         ]
-
+        new_row_items[1].setData(float(product_nast), Qt.ItemDataRole.UserRole + 4)
         new_row_items[0].setToolTip(f"პროდუქტი: {product_name_full}\nფასი: {final_price:.2f}")
         new_row_items[3].setData(product_unit_quantity_parsed_from_name, Qt.ItemDataRole.UserRole + 3)
         new_row_items[2].setData(tax_amount_unit, Qt.ItemDataRole.UserRole + 4)
@@ -498,6 +505,12 @@ class MerchantTable(QWidget):
 
     def handle_basket_addition(self, product_data: list):
         product_name_full = product_data[0]
+        # --- ADD THIS CHECK: Is it already in the basket? ---
+        for row in range(self.destinationModel.rowCount()):
+            existing_product = self.destinationModel.item(row, 0).text()
+            if existing_product == product_name_full:
+                QMessageBox.information(self, 'ინფორმაცია', f"'{product_name_full}' უკვე დამატებულია კალათაში.")
+                return  # Stop here, don't add it again!
         price_str = product_data[1]
         att_mat_info = attmat.translate_attributes(product_data[2])
 
@@ -549,39 +562,183 @@ class MerchantTable(QWidget):
         logging.info(f"Product added: {product_name_full}")
         QMessageBox.information(self, "Basket Update", f"✅ პროდუქტი '{product_name_full}' დაემატა კალათაში.")
 
-    def handle_basket_data_change(self, top_left_index: QModelIndex, bottom_right_index: QModelIndex):
+    # def handle_basket_data_change(self, top_left_index: QModelIndex, bottom_right_index: QModelIndex, row_idx=None):
+    #     changed_row = top_left_index.row()
+    #     changed_col = top_left_index.column()
+    #     # Safety check: If row_idx is missing, we can't check the sourceModel
+    #     if row_idx is None:
+    #         return
+    #
+    #         # 1. Grab the text from the source model and convert it to a math number (float)
+    #     try:
+    #         stock_text = self.sourceModel.item(row_idx, 1).text()
+    #         item_nast = float(stock_text)
+    #     except (ValueError, AttributeError):
+    #         item_nast = 0.0
+    #
+    #     if changed_col in [1, 2, 3]:
+    #         try:
+    #             qty_item = self.destinationModel.item(changed_row, 1)
+    #             price_item = self.destinationModel.item(changed_row, 2)
+    #             unit_qty_item = self.destinationModel.item(changed_row, 3)
+    #             # Read what the user typed
+    #             requested_qty = float(qty_item.text()) if qty_item and qty_item.text() else 0.0
+    #
+    #             # 2. Now we can safely compare two numbers!
+    #             if item_nast >= requested_qty:
+    #                 qty = requested_qty
+    #             else:
+    #                 QMessageBox.warning(self, "Warning", "პროდუქტი არ არის საკმარისი რაოდენობით.")
+    #                 # Optional: You might want to reset the qty_item back to item_nast here
+    #                 return
+    #
+    #
+    #             price = float(price_item.text()) if price_item and price_item.text() else 0.0
+    #             requested_current_unit_qty = float(unit_qty_item.text()) if unit_qty_item and unit_qty_item.text() else 0.0
+    #             if item_nast >= requested_qty:
+    #                 current_unit_qty = requested_current_unit_qty
+    #             else:
+    #                 QMessageBox.warning(self, "Warning", "პროდუქტი არ არის საკმარისი რაოდენობით.")
+    #                 # Optional: You might want to reset the qty_item back to item_nast here
+    #                 return
+    #
+    #             # Retrieve original internal units
+    #             original_internal_units = unit_qty_item.data(Qt.ItemDataRole.UserRole + 3) or 0
+    #
+    #             new_total = 0.0
+    #
+    #             if changed_col == 3:  # Unit Qty Changed
+    #                 if original_internal_units > 0:
+    #                     new_qty = current_unit_qty / original_internal_units
+    #                     # Update main quantity without triggering infinite loop if possible
+    #                     # (Signals are naturally handled, but ensure logic holds)
+    #                     self.destinationModel.blockSignals(True)
+    #                     qty_item.setText(f"{new_qty:.2f}")
+    #                     self.destinationModel.blockSignals(False)
+    #                     new_total = (price / original_internal_units) * current_unit_qty
+    #                     qty = new_qty
+    #                 else:
+    #                     new_total = qty * price
+    #
+    #             elif changed_col == 1:  # Main Qty Changed
+    #                 if original_internal_units > 0:
+    #                     new_unit_qty = qty * original_internal_units
+    #                     self.destinationModel.blockSignals(True)
+    #                     unit_qty_item.setText(str(new_unit_qty))
+    #                     self.destinationModel.blockSignals(False)
+    #                 new_total = qty * price
+    #
+    #             else:  # Price Changed
+    #                 new_total = qty * price
+    #
+    #             # Update Total Column
+    #             self.destinationModel.blockSignals(True)
+    #             self.destinationModel.item(changed_row, 4).setText(f"{new_total:.2f}")
+    #             self.destinationModel.blockSignals(False)
+    #
+    #             self.update_grand_total()
+    #             self.update_total_tax_display()
+    #
+    #         except ValueError:
+    #             pass
+
+    def handle_basket_data_change(self, top_left_index: QModelIndex, bottom_right_index: QModelIndex,
+                                  roles: list = None):
         changed_row = top_left_index.row()
         changed_col = top_left_index.column()
 
         if changed_col in [1, 2, 3]:
             try:
+                name_item = self.destinationModel.item(changed_row, 0)
                 qty_item = self.destinationModel.item(changed_row, 1)
                 price_item = self.destinationModel.item(changed_row, 2)
                 unit_qty_item = self.destinationModel.item(changed_row, 3)
-
+                # --- ADD YOUR PATTERN CHECK HERE ---
+                product_name = name_item.text() if name_item else ""
+                pattern = r'#(\d+)(?:ტ|ა|დრ)'
+                match = re.search(pattern, product_name)
                 qty = float(qty_item.text()) if qty_item and qty_item.text() else 0.0
-                price = float(price_item.text()) if price_item and price_item.text() else 0.0
-                current_unit_qty = float(unit_qty_item.text()) if unit_qty_item and unit_qty_item.text() else 0.0
 
-                # Retrieve original internal units
+                # If they tried to edit the Unit column (3) but the pattern doesn't match:
+
+                # If they changed the Main Qty (Col 1), the product is not divisible (not match),
+                # and they typed a fraction (like 0.5):
+                if changed_col == 1 and not match and not qty.is_integer():
+                    QMessageBox.warning(self, "შეზღუდვა",
+                                        "ამ პროდუქტის დაშლა არ შეიძლება. გთხოვთ შეიყვანოთ მთელი რიცხვი (მაგ. 1, 2, 3).")
+
+                    # Revert the MAIN quantity cell back to a safe whole number (like 1.0)
+                    self.destinationModel.blockSignals(True)
+                    qty_item.setText("0")
+                    self.destinationModel.blockSignals(False)
+                    return
+
+                if changed_col == 3 and not match:
+                    QMessageBox.warning(self, "შეზღუდვა", "ამ პროდუქტზე ერთეულით გაყიდვა არ არის შესაძლებელი.")
+
+                    # Revert the cell to 0 and LOCK it so they can't click it again
+                    self.destinationModel.blockSignals(True)
+                    unit_qty_item.setText("0")
+                    unit_qty_item.setFlags(unit_qty_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                    self.destinationModel.blockSignals(False)
+                    return
+
+
+                # 1. Read the HIDDEN Max Stock from the basket cell directly!
+                stored_stock = qty_item.data(Qt.ItemDataRole.UserRole + 4)
+                item_nast = float(stored_stock) if stored_stock is not None else 0.0
+
+                # 2. Read what the user typed
+                requested_qty = float(qty_item.text()) if qty_item and qty_item.text() else 0.0
+                price = float(price_item.text()) if price_item and price_item.text() else 0.0
+                requested_current_unit_qty = float(unit_qty_item.text()) if unit_qty_item and unit_qty_item.text() else 0.0
+
+                # 3. Retrieve original internal units
                 original_internal_units = unit_qty_item.data(Qt.ItemDataRole.UserRole + 3) or 0
 
                 new_total = 0.0
+                qty = requested_qty
+                current_unit_qty = requested_current_unit_qty
 
+                # --- MATH AND STOCK CHECKS ---
                 if changed_col == 3:  # Unit Qty Changed
                     if original_internal_units > 0:
-                        new_qty = current_unit_qty / original_internal_units
-                        # Update main quantity without triggering infinite loop if possible
-                        # (Signals are naturally handled, but ensure logic holds)
+                        qty = current_unit_qty / original_internal_units
+
+                    # Check Stock for Unit changes
+                    if qty > item_nast:
+                        QMessageBox.warning(self, "Warning",
+                                            f"პროდუქტი არ არის საკმარისი რაოდენობით. მაქსიმალური ნაშთი: {item_nast}")
                         self.destinationModel.blockSignals(True)
-                        qty_item.setText(f"{new_qty:.2f}")
+                        unit_qty_item.setText("0")  # Undo the bad input
+                        self.destinationModel.blockSignals(False)
+                        return
+                    if current_unit_qty > item_nast:
+                        QMessageBox.warning(self, "Warning",
+                                            f"პროდუქტი არ არის საკმარისი რაოდენობით. მაქსიმალური ნაშთი: {item_nast}")
+                        self.destinationModel.blockSignals(True)
+                        unit_qty_item.setText("0")  # Undo the bad input
+                        self.destinationModel.blockSignals(False)
+                        return
+
+                    if original_internal_units > 0:
+                        self.destinationModel.blockSignals(True)
+                        qty_item.setText(f"{qty:.2f}")
                         self.destinationModel.blockSignals(False)
                         new_total = (price / original_internal_units) * current_unit_qty
-                        qty = new_qty
                     else:
                         new_total = qty * price
 
                 elif changed_col == 1:  # Main Qty Changed
+                    # Check Stock for Main Qty changes
+                    if qty > item_nast:
+                        QMessageBox.warning(self, "Warning",
+                                            f"პროდუქტი არ არის საკმარისი რაოდენობით. მაქსიმალური ნაშთი: {item_nast}")
+                        self.destinationModel.blockSignals(True)
+                        qty_item.setText(str(item_nast))  # Drop it down to max allowed
+                        self.destinationModel.blockSignals(False)
+                        qty = item_nast  # Continue calculating with the max allowed
+
                     if original_internal_units > 0:
                         new_unit_qty = qty * original_internal_units
                         self.destinationModel.blockSignals(True)
@@ -592,7 +749,7 @@ class MerchantTable(QWidget):
                 else:  # Price Changed
                     new_total = qty * price
 
-                # Update Total Column
+                # --- UPDATE THE TOTAL ---
                 self.destinationModel.blockSignals(True)
                 self.destinationModel.item(changed_row, 4).setText(f"{new_total:.2f}")
                 self.destinationModel.blockSignals(False)
@@ -603,13 +760,33 @@ class MerchantTable(QWidget):
             except ValueError:
                 pass
 
+    # def delete_product(self):
+    #     selected_indexes = self.basket.selectionModel().selectedRows()
+    #     if not selected_indexes:
+    #         QMessageBox.warning(self, "Warning", "გთხოვთ, აირჩიეთ წასაშლელი პროდუქტი.")
+    #         return
+    #     row = selected_indexes[0].row()
+    #     self.destinationModel.removeRow(row)
+    #     self.update_grand_total()
+    #     self.update_total_tax_display()
+
     def delete_product(self):
         selected_indexes = self.basket.selectionModel().selectedRows()
         if not selected_indexes:
             QMessageBox.warning(self, "Warning", "გთხოვთ, აირჩიეთ წასაშლელი პროდუქტი.")
             return
-        row = selected_indexes[0].row()
-        self.destinationModel.removeRow(row)
+
+        # 1. Create a list of just the row numbers
+        rows_to_delete = [index.row() for index in selected_indexes]
+
+        # 2. Sort the list in REVERSE order (Highest row number to lowest)
+        rows_to_delete.sort(reverse=True)
+
+        # 3. Loop through and delete them one by one from the bottom up
+        for row in rows_to_delete:
+            self.destinationModel.removeRow(row)
+
+        # 4. Update the totals just once at the very end
         self.update_grand_total()
         self.update_total_tax_display()
 
@@ -854,21 +1031,24 @@ class MerchantTable(QWidget):
             QMessageBox.critical(self, "Database Error", f"Error: {db_insert_e}")
             return
 
-        folder_name = "invoices"
-        target_folder = pathlib.Path(folder_name)
-        target_folder.mkdir(parents=True, exist_ok=True)
+        INVOICES_DIR.mkdir(parents=True, exist_ok=True)
         filename = f'Invoice({created_date})#{invoice_number}.pdf'
-        full_path = os.path.join('invoices', filename)
+        full_path = str(INVOICES_DIR / filename)
 
         invoice_creation = QMessageBox.question(self, 'ქვითრის შექმნა', 'შევქმნათ ქვითარი?',
                                                 QMessageBox.StandardButton.Yes, QMessageBox.StandardButton.No)
         if invoice_creation == QMessageBox.StandardButton.Yes:
             try:
-                template_loader = jinja2.FileSystemLoader('./')
+                template_loader = jinja2.FileSystemLoader(str(BASE_DIR))
                 template_env = jinja2.Environment(loader=template_loader)
                 template = template_env.get_template('invoice.html')
                 output_text = template.render(invoice_context)
-                config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+                import json
+                with open(SETTINGS_FILE, "r") as f:
+                    settings = json.load(f)
+                wkhtmltopdf_path = settings.get("wkhtmltopdf", "")
+                config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
+                # config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
                 pdfkit.from_string(output_text, full_path, configuration=config)
             except Exception as e:
                 QMessageBox.warning(self, 'Invoice creation Error', f'ქვითრის შექმნა ვერ მოხერხდა: {e}')

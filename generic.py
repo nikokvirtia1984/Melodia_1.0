@@ -6,6 +6,7 @@ from typing import List
 
 # Assume database.py is correctly configured
 from database import Database
+from paths import ui as ui_path
 
 db = Database()
 
@@ -16,7 +17,7 @@ class CodeGeneric(QDialog):
 
     def __init__(self, selected_product_name: str, parent=None):
         super().__init__(parent)
-        loadUi('ui/generic.ui', self)
+        loadUi(ui_path('generic.ui'), self)
 
         # Access the QTableView named 'generic_list'
         self.generic_table_view = self.findChild(QTableView, 'generic_list')

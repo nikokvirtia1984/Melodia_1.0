@@ -19,6 +19,7 @@ from PyQt6.QtWidgets import QWidget, QMessageBox, QTableView, QHeaderView, QPush
 from PyQt6.uic import loadUi
 
 from database import Database
+from paths import ui as ui_path
 db = Database()
 
 
@@ -27,25 +28,24 @@ class UserSystem:
         self._initialize_db()
 
     def _initialize_db(self):
-        pass
-        # """Initialize the database table"""
-        # try:
-        #     with db.connect() as conn:
-        #         conn.autocommit = True
-        #         with conn.cursor() as cursor:
-        #             cursor.execute('''
-        #                 CREATE TABLE IF NOT EXISTS users (
-        #                     id SERIAL PRIMARY KEY,
-        #                     username VARCHAR(255) UNIQUE NOT NULL,
-        #                     password TEXT NOT NULL,
-        #                     email VARCHAR(255) UNIQUE,
-        #                     phone VARCHAR(20) UNIQUE,
-        #                     position VARCHAR(100) NOT NULL,
-        #                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        #                 )
-        #             ''')
-        # except psycopg2.Error as e:
-        #     print(f"Database initialization error: {e}")
+        """Initialize the database table"""
+        try:
+            with db.connect() as conn:
+                conn.autocommit = True
+                with conn.cursor() as cursor:
+                    cursor.execute('''
+                        CREATE TABLE IF NOT EXISTS users (
+                            id SERIAL PRIMARY KEY,
+                            username VARCHAR(255) UNIQUE NOT NULL,
+                            password TEXT NOT NULL,
+                            email VARCHAR(255) UNIQUE,
+                            phone VARCHAR(20) UNIQUE,
+                            position VARCHAR(100) NOT NULL,
+                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        )
+                    ''')
+        except psycopg2.Error as e:
+            print(f"Database initialization error: {e}")
 
     def _hash_password(self, password):
         """Hash a password for storage"""
@@ -109,7 +109,7 @@ class UserSystem:
 class RecoverPass(QWidget):
     def __init__(self):
         super().__init__()
-        loadUi('ui/code_send.ui', self)
+        loadUi(ui_path('code_send.ui'), self)
         # self.pass_restore.setOpenExternalLinks(False)
         # self.pass_restore.linkActivated.connect(self.show_password_form)
         self.code_Button.clicked.connect(self.check_email_and_send_code)
@@ -117,6 +117,7 @@ class RecoverPass(QWidget):
         self.setWindowFlags(Qt.WindowType.CustomizeWindowHint |
                             Qt.WindowType.WindowCloseButtonHint |
                             Qt.WindowType.WindowMinimizeButtonHint)
+
 
 
         # Store verification codes temporarily
@@ -127,7 +128,7 @@ class RecoverPass(QWidget):
             'server': 'smtp.gmail.com',  # Example for Gmail
             'port': 587,
             'sender_email': 'nkvirtia@gmail.com',
-            'password': 'wstq dqqw skpz ajyd'  # Use app-specific password
+            'password': 'mruq xbal kzkl zosb'  # Use app-specific password
         }
 
     def _hash_password(self, password):
@@ -197,7 +198,7 @@ class RecoverPass(QWidget):
 
     def show_password_form(self, link="#"):
         """Show the password reset form after code verification"""
-        self.password_restore = loadUi('ui/password_restore.ui')
+        self.password_restore = loadUi(ui_path('password_restore.ui'))
         self.password_restore.verify_button.clicked.connect(self.verify_code)
         self.password_restore.restore_pass.clicked.connect(self.reset_password)
         self.password_restore.restore_pass.setEnabled(False)
@@ -271,7 +272,7 @@ class ViewUsersWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.model = QStandardItemModel()
-        loadUi('ui/view_users.ui', self)
+        loadUi(ui_path('view_users.ui'), self)
         self.load_data()
 
         self.tableView.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)

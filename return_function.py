@@ -21,7 +21,7 @@
 #     # -------------------------------
 #     def __init__(self, parent=None):
 #         super().__init__(parent)
-#         loadUi("ui/return.ui", self)
+#         loadUi(ui_path("return.ui"), self)
 #         self.sourceModel = QStandardItemModel()
 #         self.checkouts.setModel(self.sourceModel)
 #
@@ -268,8 +268,13 @@ import logging
 import pdfkit
 import jinja2
 import datetime
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import json
 
 from database import Database
+from paths import SETTINGS_FILE, INVOICES_DIR, BASE_DIR, ui as ui_path
 
 db = Database()
 
@@ -282,7 +287,7 @@ class ReturnProduct(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        loadUi("ui/return.ui", self)
+        loadUi(ui_path("return.ui"), self)
         self.sourceModel = QStandardItemModel()
         self.checkouts.setModel(self.sourceModel)
 
@@ -291,6 +296,7 @@ class ReturnProduct(QWidget):
 
         # Connect the buttons
         self.return_button.clicked.connect(self.product_return)
+        self.return_all_button.clicked.connect(self.product_return_at_once)
         self.print_button.clicked.connect(self.invoice_print)
 
         # Connect Filters
@@ -395,6 +401,7 @@ class ReturnProduct(QWidget):
         invoice_id = self.sourceModel.item(row, 0).text()
         product_name = self.sourceModel.item(row, 1).text()
         quantity_str = self.sourceModel.item(row, 2).text()
+        item_quantity_str = self.sourceModel.item(row, 3).text()
 
         # Check if already returned
         status_item = self.sourceModel.item(row, 8)
@@ -443,6 +450,11 @@ class ReturnProduct(QWidget):
                             conn.commit()
                             QMessageBox.information(self, "წარმატება", "პროდუქტი წარმატებით დაბრუნდა.")
 
+                            # --- ADD THIS: Send Email Notification ---
+                            returned_data = [{'name': product_name, 'qty': quantity}]
+                            self.send_return_email(invoice_id, returned_data)
+                            # -----------------------------------------
+
                             # Refresh Data
                             self.load_data()
 
@@ -455,6 +467,133 @@ class ReturnProduct(QWidget):
 
             except Exception as e:
                 QMessageBox.critical(self, "Database Error", f"პროდუქტის დაბრუნება ვერ მოხერხდა: {e}")
+
+    def product_return_at_once(self):
+        """Returns all products in the selected invoice to stock and marks them as 'Not Sold'."""
+        selected = self.checkouts.selectionModel().selectedRows()
+        if not selected:
+            QMessageBox.warning(self, "გაფრთხილება", "გთხოვთ, აირჩიეთ ქვითარი.")
+            return
+
+        row = selected[0].row()
+        invoice_id = self.sourceModel.item(row, 0).text()
+
+        # Ask for confirmation
+        reply = QMessageBox.question(self, "სრული დაბრუნების დადასტურება",
+                                     f"დარწმუნებული ხართ, რომ გსურთ ქვითარზე (#{invoice_id}) არსებული ყველა პროდუქტის დაბრუნება?",
+                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+
+        if reply == QMessageBox.StandardButton.Yes:
+            try:
+                with db.connect() as conn:
+                    with conn.cursor() as cursor:
+                        # 1. Get all SOLD items for this invoice and match them with their COD_MAT
+                        cursor.execute("""
+                            SELECT o.product_name, o.quantity, m."COD_MAT" 
+                            FROM public.operations o
+                            JOIN public.mater1 m ON o.product_name = m."NAM_MAT"
+                            WHERE o."invoice_id" = %s AND o."sold" = TRUE
+                        """, (invoice_id,))
+
+                        items_to_return = cursor.fetchall()
+
+                        # Check if there's actually anything left to return
+                        if not items_to_return:
+                            QMessageBox.information(self, "ინფორმაცია",
+                                                    "ამ ქვითარზე დასაბრუნებელი პროდუქტები არ მოიძებნა (ან უკვე სრულად დაბრუნებულია).")
+                            return
+
+                        # 2. Loop through each item and add the Quantity back to Stock (Nashti)
+                        for item in items_to_return:
+                            product_name = item[0]
+                            quantity = float(item[1])
+                            cod_mat = item[2]
+
+                            cursor.execute("""
+                                UPDATE public.nashti 
+                                SET "NAST" = "NAST" + %s 
+                                WHERE "COD_MAT" = %s
+                            """, (quantity, cod_mat))
+
+                        # 3. Mark ALL items in this invoice as UNSOLD (False) in Operations
+                        cursor.execute("""
+                            UPDATE public.operations 
+                            SET sold = FALSE 
+                            WHERE "invoice_id" = %s
+                        """, (invoice_id,))
+
+                        conn.commit()
+                        QMessageBox.information(self, "წარმატება",
+                                                f"ქვითრის (#{invoice_id}) ყველა პროდუქტი წარმატებით დაბრუნდა.")
+
+                        # --- ADD THIS: Send Email Notification for ALL items ---
+                        returned_data = [{'name': item[0], 'qty': item[1]} for item in items_to_return]
+                        self.send_return_email(invoice_id, returned_data)
+                        # -------------------------------------------------------
+
+                        # Refresh Data and Table
+                        self.load_data()
+                        self.product_returned.emit()
+
+            except Exception as e:
+                QMessageBox.critical(self, "Database Error", f"ქვითრის სრული დაბრუნება ვერ მოხერხდა: {e}")
+
+    def send_return_email(self, invoice_id: str, returned_items: list):
+        import json
+        with open(SETTINGS_FILE, "r") as f:
+            settings = json.load(f)
+        email_cfg = settings.get("email", {})
+        sender_email = email_cfg.get("sender_email", "")
+        sender_password = email_cfg.get("sender_password", "")
+        receiver_email = email_cfg.get("receiver_email", "")
+        smtp_server = email_cfg.get("smtp_server", "smtp.gmail.com")
+        smtp_port = email_cfg.get("smtp_port", 587)
+        # ----------------------
+        subject = f"⚠️ სისტემური შეტყობინება: პროდუქტის დაბრუნება (ქვითარი #{invoice_id})"
+        body = f"დაბრუნების თარიღი: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+        body += f"ქვითრის ნომერი: {invoice_id}\n\n"
+        body += "დაბრუნებული პროდუქტები:\n"
+        body += "-" * 40 + "\n"
+
+        for item in returned_items:
+            body += f"• პროდუქტი: {item['name']} | რაოდენობა: {item['qty']}\n"
+
+        body += "-" * 40 + "\n"
+        body += "ეს არის ავტომატური შეტყობინება სისტემიდან."
+
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = receiver_email
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'plain', 'utf-8'))
+
+        # --- THE DEBUGGING BLOCK ---
+        try:
+            # Added a timeout of 10 seconds so your app doesn't freeze if the internet is slow
+            server = smtplib.SMTP(smtp_server, smtp_port, timeout=10)
+            server.set_debuglevel(1)  # This prints exact server conversation to your console
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.send_message(msg)
+            server.quit()
+            logging.info(f"Return email successfully sent for invoice #{invoice_id}")
+            print(f"✅ Email successfully sent to {receiver_email}")
+
+        except smtplib.SMTPAuthenticationError as e:
+            error_msg = f"ავტორიზაციის შეცდომა!\nალბათ პაროლი ან მეილია არასწორი. გამოიყენეთ Google App Password.\n\nდეტალები:\n{e}"
+            print(f"❌ {error_msg}")
+            QMessageBox.critical(self, "Email Error (Auth)", error_msg)
+
+        except smtplib.SMTPConnectError as e:
+            error_msg = f"სერვერთან კავშირის შეცდომა!\nშესაძლოა ანტივირუსი ან ინტერნეტი ბლოკავს პორტს 587.\n\nდეტალები:\n{e}"
+            print(f"❌ {error_msg}")
+            QMessageBox.critical(self, "Email Error (Connection)", error_msg)
+
+        except Exception as e:
+            error_msg = f"გაუთვალისწინებელი შეცდომა მეილის გაგზავნისას:\n\n{e}"
+            print(f"❌ {error_msg}")
+            QMessageBox.critical(self, "Email Error (General)", error_msg)
+
 
     def invoice_print(self):
         """Generates and prints the invoice for the selected record."""
@@ -499,23 +638,37 @@ class ReturnProduct(QWidget):
             }
 
             # Generate PDF
-            template_loader = jinja2.FileSystemLoader('./')
+            template_loader = jinja2.FileSystemLoader(str(BASE_DIR))
             template_env = jinja2.Environment(loader=template_loader)
             template = template_env.get_template('invoice.html')
             output_text = template.render(invoice_context)
 
-            config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
-            filename = f'Invoice({invoice_record[3].strftime("%Y-%m-%d")})#{invoice_id}.pdf'
-            full_path = os.path.join('invoices', filename)
+            with open(SETTINGS_FILE, "r") as f:
+                settings = json.load(f)
+            wkhtmltopdf_path = settings.get("wkhtmltopdf", "")
+            config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
 
-            if not os.path.exists('invoices'):
-                os.makedirs('invoices')
+            filename = f'Invoice({invoice_record[3].strftime("%Y-%m-%d")})#{invoice_id}.pdf'
+            full_path = str(INVOICES_DIR / filename)
+
+            INVOICES_DIR.mkdir(parents=True, exist_ok=True)
 
             pdfkit.from_string(output_text, full_path, configuration=config)
 
-            QMessageBox.information(self, 'ინვოისის ამობეჭდვა', 'ინვოისი წარმატებით შეიქმნა! გსურთ ამობეჭდვა?',
-                                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-            os.startfile(full_path)
+            # QMessageBox.information(self, 'ინვოისის ამობეჭდვა', 'ინვოისი წარმატებით შეიქმნა! გსურთ ამობეჭდვა?',
+            #                         QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            # os.startfile(full_path)
+            reply = QMessageBox.question(
+                self, 'ინვოისის ამობეჭდვა',
+                'ინვოისი წარმატებით შეიქმნა! გსურთ ამობეჭდვა?',
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            )
+            if reply == QMessageBox.StandardButton.Yes:
+                try:
+                    os.startfile(full_path)
+                except Exception as e:
+                    QMessageBox.critical(self, "Print Error", f"ინვოისის გახსნა ვერ მოხერხდა: {e}")
+
         except Exception as e:
             QMessageBox.critical(self, "PDF Error", f"ინვოისის შექმნა ვერ მოხერხდა: {e}")
 

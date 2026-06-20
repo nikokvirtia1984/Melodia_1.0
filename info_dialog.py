@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QDialog, QListWidget, QListWidgetItem, QLabel
 from PyQt6.uic import loadUi
 from typing import List
+from paths import ui as ui_path
 
 
 class InfoDialog(QDialog):
@@ -8,7 +9,7 @@ class InfoDialog(QDialog):
         super().__init__(parent)
 
         # Load the dialog UI onto THIS new QDialog instance
-        loadUi('ui/info_window.ui', self)
+        loadUi(ui_path('info_window.ui'), self)
         self.setWindowTitle(f"თვისებები: {material_name}")
 
         # --- Assumption ---

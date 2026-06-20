@@ -1,6 +1,5 @@
 # from PyQt6.QtGui.QTextCursor import position
 from threading import current_thread
-
 from PyQt6.QtCore import QFile, QIODevice, QTextStream, Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QWidget
 from PyQt6.uic import loadUi
@@ -12,14 +11,15 @@ from main_menu import MenuWindow, UserRegistration
 from user_system import UserSystem, RecoverPass
 
 from database import Database
+from paths import SETTINGS_FILE, ui as ui_path
 db = Database()
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        loadUi('ui/LoginWindow.ui', self)
-        self.load_qss('ui/Adaptic.qss')
+        loadUi(ui_path('LoginWindow.ui'), self)
+        self.load_qss(ui_path('Adaptic.qss'))
         self.is_first_run()
         self.version = self.get_version()
         self.user_system = UserSystem()
@@ -37,7 +37,7 @@ class MainWindow(QMainWindow):
                             Qt.WindowType.WindowMinimizeButtonHint)
 
     def is_first_run(self):
-        with open("settings.json", "r") as file:
+        with open(SETTINGS_FILE, "r") as file:
             settings = json.load(file)
         if settings["first_run"] == "No":
             self.initial_setup.hide()
@@ -45,7 +45,7 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "პროგრამის პირველი გაშვება",
                                     "საჭიროა მონაცემთა ბაზის ინიციალიზაცია!")
     def get_version(self):
-        with open("settings.json", "r") as file:
+        with open(SETTINGS_FILE, "r") as file:
             settings = json.load(file)
             version = settings["version"]
 
@@ -140,11 +140,11 @@ class MainWindow(QMainWindow):
             print(f"Database initialization error: {e}")
 
     def update_settings_file(self):
-        with open("settings.json", "r") as file:
+        with open(SETTINGS_FILE, "r") as file:
             settings = json.load(file)
         settings["first_run"] = "No"
 
-        with open("settings.json", "w") as file:
+        with open(SETTINGS_FILE, "w") as file:
             json.dump(settings, file, indent=4)
 
     def _add_missing_columns(self, cursor) -> None:
@@ -215,8 +215,18 @@ class MainWindow(QMainWindow):
         event.accept()
 
 
+# if __name__ == "__main__":
+#     app = QApplication(sys.argv)
+#     window = MainWindow()
+#     window.show()
+#     sys.exit(app.exec())
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
+    try:
+        window = MainWindow()
+        window.show()
+    except ConnectionError as e:
+        QMessageBox.critical(None, "კავშირის შეცდომა", str(e))
+        sys.exit(1)
     sys.exit(app.exec())

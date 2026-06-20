@@ -44,3 +44,21 @@
 2025-12-28 16:48:21,362 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2025-12-28)#507665.pdf
 2025-12-31 10:18:48,258 - INFO - Product added: \u10de\u10d0\u10dc\u10d0\u10dc\u10d2\u10d8\u10dc\u10d8 \u10e4\u10dd\u10e0\u10e2\u10d4#60\u10e2
 2025-12-31 10:19:04,243 - INFO - Product added: \u10d0\u10e1\u10de\u10d0\u10e0\u10d9\u10d0\u10db\u10d8 0.35\u10db\u10d2 #50\u10e2 (\u10e3\u10d9\u10e0)
+2026-01-29 02:17:19,052 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2026-01-29)#598902.pdf
+2026-02-13 00:44:09,518 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2026-02-13)#499265.pdf
+2026-03-09 14:58:17,265 - INFO - Checkout successful. Username: niko . Invoice created: invoices\Invoice(2026-03-09)#781731.pdf
+2026-04-08 12:28:23,037 - ERROR - Failed to send return email: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials 5b1f17b1804b1-488c5dc6499sm13602545e9.30 - gsmtp')
+2026-04-08 12:29:58,666 - ERROR - Failed to send return email: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials 5b1f17b1804b1-488b739e00bsm218432065e9.10 - gsmtp')
+2026-04-08 13:20:32,255 - INFO - Return email successfully sent for invoice #958438
+2026-05-18 14:06:41,444 - INFO - Checkout successful. Username: root . Invoice created: invoices\Invoice(2026-05-18)#911800.pdf
+2026-05-18 14:06:59,356 - INFO - Return email successfully sent for invoice #911800
+2026-05-18 14:07:33,778 - INFO - Checkout successful. Username: root . Invoice created: invoices\Invoice(2026-05-18)#247678.pdf
+2026-05-18 14:07:49,488 - INFO - Return email successfully sent for invoice #247678
+2026-06-18 18:10:57,027 - INFO - Checkout successful. Username: root . Invoice created: invoices\Invoice(2026-06-18)#990107.pdf
+2026-06-18 18:23:15,610 - INFO - Checkout successful. Username: root . Invoice created: invoices\Invoice(2026-06-18)#456275.pdf
+2026-06-18 18:30:27,628 - INFO - Checkout successful. Username: root . Invoice created: invoices\Invoice(2026-06-18)#840089.pdf
+2026-06-18 18:37:07,889 - INFO - Checkout successful. Username: root . Invoice created: invoices\Invoice(2026-06-18)#280308.pdf
+2026-06-18 18:39:25,566 - INFO - Checkout successful. Username: root . Invoice created: invoices\Invoice(2026-06-18)#335591.pdf
+2026-06-18 18:51:21,171 - INFO - Checkout successful. Username: root . Invoice created: invoices\Invoice(2026-06-18)#928765.pdf
+2026-06-18 18:54:23,699 - INFO - Return email successfully sent for invoice #928765
+2026-06-20 16:33:36,255 - INFO - Checkout successful. Username: root . Invoice created: C:\Users\user\Documents\melodia_1.0\invoices\Invoice(2026-06-20)#805678.pdf

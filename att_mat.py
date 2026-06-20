@@ -2,6 +2,7 @@ import pandas as pd
 from typing import List, Dict, Any
 import os
 from database import Database
+from paths import BASE_DIR
 db = Database()
 
 class MaterialAttributeTranslator:
@@ -11,9 +12,9 @@ class MaterialAttributeTranslator:
     """
 
     # --- 0. STATIC LOOKUP DATA (Now file paths instead of content strings) ---
-    _MATFORM_FILE = "matform_content.csv"
-    _MATSTOR_FILE = "matstor_content.csv"
-    _SAXEEBI_FILE = "saxeebi_content.csv"
+    _MATFORM_FILE = str(BASE_DIR / "matform_content.csv")
+    _MATSTOR_FILE = str(BASE_DIR / "matstor_content.csv")
+    _SAXEEBI_FILE = str(BASE_DIR / "saxeebi_content.csv")
 
     _SIMPLE_RULES: Dict[str, Dict[str, str]] = {
         'შენახვის პირობები': {'0': 'შენახვა ჩვეულებრივ ადგილზე', '1': 'შენახვა ბნელ ადგილზე'},
@@ -104,7 +105,7 @@ class MaterialAttributeTranslator:
 
         product_description = {
             'ფორმების კოდი': attribute_value_str[0:2].lstrip('0'),
-            'მაცივარიში შენახვის პირობები': attribute_value_str[2],
+            'მაცივარში შენახვის პირობები': attribute_value_str[2],
             'შენახვის პირობები': attribute_value_str[3],
             'Aსია, Bსია': attribute_value_str[4],
             'სპეც კონტროლი': attribute_value_str[5],

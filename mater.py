@@ -9,6 +9,7 @@ from typing import List, Union, Dict, Any
 from user_system import UserSystem
 
 from database import Database
+from paths import ui as ui_path
 db = Database()
 
 
@@ -17,7 +18,7 @@ class MaterTable(QWidget):
 
     def __init__(self, user_db: UserSystem = None):
         super().__init__()
-        loadUi("ui/add_product.ui", self)
+        loadUi(ui_path("add_product.ui"), self)
 
         # Initialize database connection
         self.user_db = UserSystem()
@@ -37,8 +38,8 @@ class MaterTable(QWidget):
         self.mandatory_fields = [
             self.name,
             self.division,
-            self.cc,
-            self.rec,
+            # self.cc,
+            # self.rec,
             self.spec_code
         ]
 
@@ -59,8 +60,7 @@ class MaterTable(QWidget):
         all_valid = all(
             field.currentText().strip() if isinstance(field, QComboBox)
             else field.text().strip()
-            for field in self.mandatory_fields
-        )
+            for field in self.mandatory_fields)
         self.save_button.setEnabled(all_valid)
 
     def get_form_data(self) -> Dict[str, Any]:
@@ -76,6 +76,7 @@ class MaterTable(QWidget):
             else self.rec.text().strip(),
             'referral': self.referral.text().strip(),
             'generic': self.generic.text().strip(),
+
             'storecon': self.storecon.text().strip(),
             'hc': self._generate_unique_code(),
             'hc2': self._generate_unique_code(),
@@ -227,7 +228,7 @@ class MaterTableView(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.model = QStandardItemModel()
-        loadUi('ui/view_mater.ui', self)
+        loadUi(ui_path('view_mater.ui'), self)
         self.load_data()
         self.tableView.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
         self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)

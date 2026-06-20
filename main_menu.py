@@ -9,6 +9,7 @@ from mater import MaterTable, MaterTableView
 from merchant import MerchantTable
 
 from database import Database
+from paths import ui as ui_path
 db = Database()
 
 
@@ -24,7 +25,7 @@ class MenuWindow(QMainWindow):
         super().__init__()
         self.add_product_window = None
         try:
-            loadUi('ui/MelodiaWindow.ui', self)
+            loadUi(ui_path('MelodiaWindow.ui'), self)
         except Exception as e:
             QMessageBox.critical(self, 'Error', f'Failed to load UI: {str(e)}')
             raise
@@ -76,7 +77,7 @@ class MenuWindow(QMainWindow):
 class UserRegistration(QWidget):
     def __init__(self):
         super(UserRegistration, self).__init__()
-        loadUi('ui/registration.ui', self)
+        loadUi(ui_path('registration.ui'), self)
         self.registration_button.clicked.connect(self.register_user)
         self.user_db = UserSystem()
 
